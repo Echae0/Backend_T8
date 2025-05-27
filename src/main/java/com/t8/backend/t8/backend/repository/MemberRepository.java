@@ -1,0 +1,9 @@
+package com.t8.backend.t8.backend.repository;
+
+import com.t8.backend.t8.backend.domain.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface MemberRepository extends JpaRepository<Member, Long> {
+}
