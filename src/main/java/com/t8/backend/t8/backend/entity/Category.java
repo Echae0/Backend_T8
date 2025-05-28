@@ -1,4 +1,4 @@
-package com.t8.backend.t8.backend.domain;
+package com.t8.backend.t8.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

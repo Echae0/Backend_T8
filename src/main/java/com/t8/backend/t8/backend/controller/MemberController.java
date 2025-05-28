@@ -2,6 +2,7 @@ package com.t8.backend.t8.backend.controller;
 
 import com.t8.backend.t8.backend.dto.MemberDto;
 import com.t8.backend.t8.backend.service.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.List;
 @RequestMapping("/api/members")
 public class MemberController {
     private final MemberService service;
+
+    @Autowired
     public MemberController(MemberService service) { this.service = service; }
 
     @PostMapping

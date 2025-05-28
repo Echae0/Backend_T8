@@ -2,6 +2,7 @@ package com.t8.backend.t8.backend.controller;
 
 import com.t8.backend.t8.backend.dto.ReservationDto;
 import com.t8.backend.t8.backend.service.ReservationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.List;
 @RequestMapping("/api/reservations")
 public class ReservationController {
     private final ReservationService service;
+
+    @Autowired
     public ReservationController(ReservationService service) { this.service = service; }
 
     @PostMapping
