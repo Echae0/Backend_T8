@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,8 @@ public class MemberEntityTest {
 
     @Test
     @Transactional // 테스트 후 데이터 롤백을 위해 추가
+    @Rollback(false) // 테스트가 끝나도 롤백하지 않도록 설정
+
     void testSaveMember() {
         // 1. Member 엔티티 생성
         Member member = Member.builder()
