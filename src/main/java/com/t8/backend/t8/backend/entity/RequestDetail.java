@@ -1,6 +1,7 @@
 package com.t8.backend.t8.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
@@ -9,14 +10,19 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RequestDetail {
+@EqualsAndHashCode(callSuper = true)
+public class RequestDetail extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
     private String requestType;
+
     private String content;
-    private Boolean isActive;
+
+    @Builder.Default
+    private Boolean isActive = true;
 }
