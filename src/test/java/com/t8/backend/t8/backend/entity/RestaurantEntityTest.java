@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("prod") // 실제 MariaDB 연결되는 설정으로 작동
+@ActiveProfiles("prod")
 @Transactional
-@Rollback(false) // DB에 실제로 저장되도록
+@Rollback(false)
 public class RestaurantEntityTest {
 
     @Autowired
@@ -27,31 +27,29 @@ public class RestaurantEntityTest {
 
     @Test
     void testSaveRestaurant() {
-        // 테스트용 카테고리 생성 및 저장 (외래키 필요)
+        // Given: Category 먼저 저장
         Category category = Category.builder()
-                .categoryName("한식")
+                .categoryName("양식")
                 .build();
-        category = categoryRepository.save(category);
+        categoryRepository.save(category);
 
-        // Restaurant 엔티티 생성
+        // When: Restaurant 생성 및 저장
         Restaurant restaurant = Restaurant.builder()
-                .restaurantName("맛있는 식당")
-                .location("서울 강남구")
+                .restaurantName("이탈리안 하우스")
+                .location("서울시 서초구")
                 .imageUrl("https://example.com/image.jpg")
-                .contactNumber("02-123-4567")
-                .openingHours("10:00~22:00")
+                .contactNumber("02-987-6543")
+                .openingHours("11:00 ~ 21:00")
                 .category(category)
-                .dailyLimitedTeams(15)
-                .availableTeams(15)
+                .dailyLimitedTeams(12)
+                .availableTeams(12)
                 .build();
 
-        // 저장
         Restaurant saved = restaurantRepository.save(restaurant);
 
-        // 검증
-        assertNotNull(saved.getId(), "식당 ID가 null이면 안 됩니다.");
-        assertEquals("맛있는 식당", saved.getRestaurantName());
-        assertEquals("서울 강남구", saved.getLocation());
-        assertEquals("한식", saved.getCategory().getCategoryName());
+        // Then: 저장 여부 검증
+        assertNotNull(saved.getId());
+        assertEquals("이탈리안 하우스", saved.getRestaurantName());
+        assertEquals("양식", saved.getCategory().getCategoryName());
     }
 }
