@@ -19,6 +19,7 @@
 		<java.version>17</java.version>
 		<spring-boot-admin.version>3.3.6</spring-boot-admin.version>
 		<asciidoctor.version>2.2.1</asciidoctor.version>
+		<lombok.version>1.18.34</lombok.version>
 	</properties>
 
 	<dependencies>
@@ -52,6 +53,7 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
+			<version>${lombok.version}</version>
 		</dependency>
 
 		<!-- Spring REST Docs -->
@@ -82,6 +84,7 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
