@@ -1,40 +1,53 @@
 package com.t8.backend.t8.backend.controller;
 
-import com.t8.backend.t8.backend.dto.MemberDto;
-import com.t8.backend.t8.backend.service.MemberService;
+import com.t8.backend.t8.backend.dto.MemberDto; // 기존 MemberDto 사용
+import com.t8.backend.t8.backend.service.MemberService; // MemberService 클래스를 임포트
+import lombok.RequiredArgsConstructor; // Lombok 어노테이션 추가
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid; // 유효성 검증을 위해 추가
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/members")
+@RequiredArgsConstructor // final 필드(memberService)를 인자로 받는 생성자 자동 생성
 public class MemberController {
-    private final MemberService service;
-    public MemberController(MemberService service) { this.service = service; }
+    private final MemberService memberService; // 필드 이름을 memberService로 변경 (가독성)
+
+    // @Autowired 생성자 주입은 @RequiredArgsConstructor가 대체하므로 삭제합니다.
+    // public MemberController(MemberService service) { this.service = service; }
+
+//    @PostMapping
+//    public ResponseEntity<MemberDto> create(@Valid @RequestBody MemberDto dto) { // MemberDto 그대로 사용
+//        return new ResponseEntity<>(memberService.register(dto), HttpStatus.CREATED); // 201 Created 응답
+//    }
 
     @PostMapping
-    public ResponseEntity<MemberDto> create(@RequestBody MemberDto dto) {
-        return ResponseEntity.ok(service.register(dto));
+    public ResponseEntity<MemberDto> create(@Valid @RequestBody MemberDto dto) {
+        return ResponseEntity.ok(memberService.register(dto));
     }
 
+
     @GetMapping
-    public ResponseEntity<List<MemberDto>> list() {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<List<MemberDto>> list() { // MemberDto 리스트 반환
+        return ResponseEntity.ok(memberService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberDto> get(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getById(id));
+    public ResponseEntity<MemberDto> get(@PathVariable Long id) { // MemberDto 반환
+        return ResponseEntity.ok(memberService.getById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MemberDto> update(@PathVariable Long id, @RequestBody MemberDto dto) {
-        return ResponseEntity.ok(service.update(id, dto));
+    public ResponseEntity<MemberDto> update(@PathVariable Long id, @Valid @RequestBody MemberDto dto) { // MemberDto 그대로 사용
+        return ResponseEntity.ok(memberService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+        memberService.delete(id);
+        return ResponseEntity.noContent().build(); // 204 No Content 응답
     }
 }

@@ -64,3 +64,4 @@ public class Reservation extends BaseEntity {
         requestDetail.setReservation(this);
     }
 }
+

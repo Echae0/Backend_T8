@@ -33,7 +33,7 @@ public class Review extends BaseEntity {
 
     @PrePersist
     protected void onCreate() {
-        super.onCreate();
+//        super.onCreate();
         this.createdAt = LocalDateTime.now();
     }
 }

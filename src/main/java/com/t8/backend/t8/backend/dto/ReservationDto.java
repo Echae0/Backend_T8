@@ -13,6 +13,10 @@ public class ReservationDto {
     private Integer partySize;
     private LocalDateTime reservedAt;
     private String status;
+
     private Long memberId;
     private Long restaurantId;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
