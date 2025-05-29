@@ -1,7 +1,6 @@
 package com.t8.backend.t8.backend.controller;
 
-import com.t8.backend.t8.backend.dto.ReservationRequestDTO;
-import com.t8.backend.t8.backend.dto.ReservationResponseDTO;
+import com.t8.backend.t8.backend.dto.ReservationDto;
 import com.t8.backend.t8.backend.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,34 +16,34 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDTO> createReservation(@RequestBody ReservationRequestDTO requestDTO) {
-        ReservationResponseDTO responseDTO = reservationService.createReservation(requestDTO);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<ReservationDto> create(@RequestBody ReservationDto dto) {
+        return ResponseEntity.ok(reservationService.create(dto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponseDTO> getReservation(@PathVariable Long id) {
-        ReservationResponseDTO responseDTO = reservationService.getReservationById(id);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<ReservationDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(reservationService.getById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDTO>> getAllReservations() {
-        List<ReservationResponseDTO> reservations = reservationService.getAllReservations();
-        return ResponseEntity.ok(reservations);
+    public ResponseEntity<List<ReservationDto>> getAll() {
+        return ResponseEntity.ok(reservationService.getAll());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationResponseDTO> updateReservation(
-            @PathVariable Long id,
-            @RequestBody ReservationRequestDTO requestDTO) {
-        ReservationResponseDTO responseDTO = reservationService.updateReservation(id, requestDTO);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<ReservationDto> update(@PathVariable Long id, @RequestBody ReservationDto dto) {
+        return ResponseEntity.ok(reservationService.update(id, dto));
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+        reservationService.cancel(id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        reservationService.cancel(id);
         return ResponseEntity.noContent().build();
     }
 }
