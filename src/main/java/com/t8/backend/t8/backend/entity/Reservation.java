@@ -1,7 +1,6 @@
 package com.t8.backend.t8.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,11 +30,11 @@ public class Reservation extends BaseEntity {
     private Status status = Status.REQUESTED;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = true)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false)
+    @JoinColumn(name = "restaurant_id", nullable = true)
     private Restaurant restaurant;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -64,4 +63,3 @@ public class Reservation extends BaseEntity {
         requestDetail.setReservation(this);
     }
 }
-

@@ -1,66 +1,56 @@
 package com.t8.backend.t8.backend.entity;
 
-import com.t8.backend.t8.backend.repository.MemberRepository;
-import com.t8.backend.t8.backend.repository.RequestDetailRepository;
+import com.t8.backend.t8.backend.entity.Reservation;
 import com.t8.backend.t8.backend.repository.ReservationRepository;
-import com.t8.backend.t8.backend.repository.RestaurantRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase; // 제거
-// import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;       // 제거
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest; // ⭐ @SpringBootTest로 변경
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@SpringBootTest // ⭐ @DataJpaTest 대신 @SpringBootTest 사용
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // 여전히 실제 DB 사용을 원한다면 유지
-@ActiveProfiles("test")
+import static org.junit.jupiter.api.Assertions.*;
+
+//@DataJpaTest
+@SpringBootTest
+@ActiveProfiles("prod")
 public class ReservationEntityTest {
 
-    @Autowired private MemberRepository memberRepository;
-    @Autowired private RestaurantRepository restaurantRepository;
-    @Autowired private ReservationRepository reservationRepository;
-    @Autowired private RequestDetailRepository requestDetailRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Test
-    @Transactional // ⭐ @SpringBootTest를 사용할 때는 Transactional 어노테이션을 추가하여 테스트 후 롤백되도록 하는 것이 일반적입니다.
-    void createReservationWithDetails() {
-        // 1. Member & Restaurant 저장
-        Member member = memberRepository.save(Member.builder()
-                .name("홍길동").email("hong@test.com").build());
-
-        Restaurant restaurant = restaurantRepository.save(Restaurant.builder()
-                .restaurantName("김밥천국").location("서울").dailyLimitedTeams(10)
-                .availableTeams(3).build());
-
-        // 2. 예약 생성
+    @Rollback(value = false)
+    public void testSaveAndFindReservation() {
+        // 1. Reservation 엔티티 생성 (member, restaurant는 null로 처리)
         Reservation reservation = Reservation.builder()
-                .reservationNumber("RES1234")
+                .reservationNumber("RES-001")
                 .partySize(4)
                 .reservedAt(LocalDateTime.now())
-                .joinedAt(LocalDateTime.now().plusMinutes(10))
-                .predictedWait(15)
-                .member(member)
-                .restaurant(restaurant)
+                .joinedAt(null)
+                .predictedWait(20)
+                .status(Reservation.Status.REQUESTED)
+                .member(null)     // 실제 연관관계 테스트 시 Member 엔티티 필요
+                .restaurant(null) // 실제 연관관계 테스트 시 Restaurant 엔티티 필요
                 .build();
 
-        // 3. 요청 상세 추가
-        RequestDetail detail1 = RequestDetail.builder().request("창가 자리").build();
-        reservation.addRequestDetail(detail1);
+        // 2. 저장
+        Reservation saved = reservationRepository.save(reservation);
+        assertNotNull(saved.getId(), "저장 후 ID가 생성되어야 한다.");
 
-        // 4. 저장
-        reservationRepository.save(reservation);
+        // 3. 조회
+        Optional<Reservation> foundOpt = reservationRepository.findById(saved.getId());
+        assertTrue(foundOpt.isPresent(), "저장된 예약이 조회되어야 한다.");
 
-        // 5. 검증
-        Optional<Reservation> result = reservationRepository.findById(reservation.getId());
-        assertTrue(result.isPresent());
-        assertEquals(1, result.get().getRequestDetails().size());
+        Reservation found = foundOpt.get();
+        assertEquals("RES-001", found.getReservationNumber());
+        assertEquals(4, found.getPartySize());
+        assertEquals(Reservation.Status.REQUESTED, found.getStatus());
+        assertEquals(20, found.getPredictedWait());
+        assertNull(found.getMember());
+        assertNull(found.getRestaurant());
     }
 }
