@@ -2,6 +2,7 @@ package com.t8.backend.t8.backend.controller;
 
 import com.t8.backend.t8.backend.dto.RestaurantDto;
 import com.t8.backend.t8.backend.service.RestaurantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class RestaurantController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RestaurantDto> update(@PathVariable Long id, @RequestBody RestaurantDto dto) {
+    public ResponseEntity<RestaurantDto> update(@PathVariable Long id, @Valid @RequestBody RestaurantDto dto) {
         return ResponseEntity.ok(restaurantService.update(id, dto));
     }
 

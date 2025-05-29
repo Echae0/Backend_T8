@@ -72,17 +72,17 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + id));
 
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + dto.getCategoryId()));
+//        Category category = categoryRepository.findById(dto.getCategoryId())
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + dto.getCategoryId()));
 
         restaurant.setRestaurantName(dto.getRestaurantName());
         restaurant.setLocation(dto.getLocation());
         restaurant.setImageUrl(dto.getImageUrl());
-        restaurant.setCategory(category);
+        restaurant.setCategory(null);
         restaurant.setContactNumber(dto.getContactNumber());
         restaurant.setOpeningHours(dto.getOpeningHours());
 
-        return toDto(restaurant);
+        return toDto(restaurantRepository.save(restaurant));
     }
 
     @Transactional
