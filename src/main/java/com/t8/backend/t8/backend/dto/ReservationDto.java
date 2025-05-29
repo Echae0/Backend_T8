@@ -18,5 +18,5 @@ public class ReservationDto {
     private Long restaurantId;
     private Long id;
     private String status;
-    private List<String> requestDetails; // 예: 요
+    private String requestDetail;
 }

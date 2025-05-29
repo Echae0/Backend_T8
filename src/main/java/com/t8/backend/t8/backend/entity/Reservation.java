@@ -3,8 +3,6 @@ package com.t8.backend.t8.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "reservations")
@@ -14,7 +12,8 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 public class Reservation extends BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String reservationNumber;
@@ -37,9 +36,9 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "restaurant_id", nullable = true)
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<RequestDetail> requestDetails = new ArrayList<>();
+    // ✅ 단일 요청사항 텍스트 필드
+    @Column(length = 500)
+    private String requestDetail;
 
     public enum Status {
         REQUESTED("요청됨"),
@@ -55,11 +54,5 @@ public class Reservation extends BaseEntity {
         public String getDescription() {
             return description;
         }
-    }
-
-    // 연관 관계 편의 메서드
-    public void addRequestDetail(RequestDetail requestDetail) {
-        requestDetails.add(requestDetail);
-        requestDetail.setReservation(this);
     }
 }
