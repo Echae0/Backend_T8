@@ -14,8 +14,7 @@ public class RestaurantDto {
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long categoryId;
-    private String category;
+    private CategoryDto category;
     private String contactNumber;
     private String openingHours;
 }
