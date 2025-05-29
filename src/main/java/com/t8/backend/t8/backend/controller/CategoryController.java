@@ -9,18 +9,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
-    private final CategoryService service;
-    public CategoryController(CategoryService service) {
-        this.service = service;
-    }
-
-    @PostMapping
-    public ResponseEntity<CategoryDto> create(@RequestBody CategoryDto dto) {
-        return ResponseEntity.ok(service.register(dto));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<CategoryDto>> list() {
-        return ResponseEntity.ok(service.getAll());
-    }
+//    private final CategoryService service;
+//    public CategoryController(CategoryService service) {
+//        this.service = service;
+//    }
+//
+//    @PostMapping
+//    public ResponseEntity<CategoryDto> create(@RequestBody CategoryDto dto) {
+//        return ResponseEntity.ok(service.register(dto));
+//    }
+//
+//    @GetMapping
+//    public ResponseEntity<List<CategoryDto>> list() {
+//        return ResponseEntity.ok(service.getAll());
+//    }
 }
