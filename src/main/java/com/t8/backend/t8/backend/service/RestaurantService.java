@@ -23,13 +23,16 @@ public class RestaurantService {
     private final CategoryRepository categoryRepository;
 
     private Restaurant toEntity(RestaurantDto dto) {
-        Category category = Optional.ofNullable(dto.getCategory())
-                .map(catDto -> Category.builder()
-                        .id(catDto.getId())
-                        .categoryCode(catDto.getCategoryCode())
-                        .categoryName(catDto.getCategoryName())
-                        .build())
-                .orElseThrow(() -> new IllegalArgumentException("Category is required"));
+//        Category category = Optional.ofNullable(dto.getCategory())
+//                .map(catDto -> Category.builder()
+//                        .id(catDto.getId())
+//                        .categoryCode(catDto.getCategoryCode())
+//                        .categoryName(catDto.getCategoryName())
+//                        .build())
+//                .orElseThrow(() -> new IllegalArgumentException("Category is required"));
+
+        Category category = categoryRepository.findByCategoryCode(dto.getCategoryCode())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category code: " + dto.getCategoryCode()));
 
 
         return Restaurant.builder()
@@ -50,11 +53,12 @@ public class RestaurantService {
                 .imageUrl(entity.getImageUrl())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
-                .category(entity.getCategory() != null ? CategoryDto.builder()
-                        .id(entity.getCategory().getId())
-                        .categoryCode(entity.getCategory().getCategoryCode())
-                        .categoryName(entity.getCategory().getCategoryName())
-                        .build() : null)
+//                .category(entity.getCategory() != null ? CategoryDto.builder()
+//                        .id(entity.getCategory().getId())
+//                        .categoryCode(entity.getCategory().getCategoryCode())
+//                        .categoryName(entity.getCategory().getCategoryName())
+//                        .build() : null)
+                .categoryCode(entity.getCategory() != null ? entity.getCategory().getCategoryCode() : null)
                 .contactNumber(entity.getContactNumber())
                 .openingHours(entity.getOpeningHours())
                 .build();
@@ -83,13 +87,16 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + id));
 
-        Category category = Optional.ofNullable(dto.getCategory())
-                .map(catDto -> Category.builder()
-                        .id(catDto.getId())
-                        .categoryCode(catDto.getCategoryCode())
-                        .categoryName(catDto.getCategoryName())
-                        .build())
-                .orElseThrow(() -> new IllegalArgumentException("Category is required"));
+//        Category category = Optional.ofNullable(dto.getCategory())
+//                .map(catDto -> Category.builder()
+//                        .id(catDto.getId())
+//                        .categoryCode(catDto.getCategoryCode())
+//                        .categoryName(catDto.getCategoryName())
+//                        .build())
+//                .orElseThrow(() -> new IllegalArgumentException("Category is required"));
+
+        Category category = categoryRepository.findByCategoryCode(dto.getCategoryCode())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category code: " + dto.getCategoryCode()));
 
         restaurant.setRestaurantName(dto.getRestaurantName());
         restaurant.setLocation(dto.getLocation());
