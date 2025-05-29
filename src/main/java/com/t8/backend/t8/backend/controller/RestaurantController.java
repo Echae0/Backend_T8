@@ -16,9 +16,12 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @PostMapping
-    public ResponseEntity<RestaurantDto> register(@RequestBody RestaurantDto dto) {
-        return ResponseEntity.ok(restaurantService.register(dto));
+    public ResponseEntity<RestaurantDto> createRestaurant(
+            @RequestBody RestaurantDto dto) {
+        RestaurantDto saved = restaurantService.create(dto);
+        return ResponseEntity.ok(saved);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantDto> getById(@PathVariable Long id) {

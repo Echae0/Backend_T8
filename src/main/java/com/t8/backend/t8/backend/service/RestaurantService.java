@@ -21,14 +21,14 @@ public class RestaurantService {
     private final CategoryRepository categoryRepository;
 
     private Restaurant toEntity(RestaurantDto dto) {
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + dto.getCategoryId()));
+//        Category category = categoryRepository.findById(dto.getCategoryId())
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + dto.getCategoryId()));
 
         return Restaurant.builder()
                 .restaurantName(dto.getRestaurantName())
                 .location(dto.getLocation())
                 .imageUrl(dto.getImageUrl())
-                .category(category)
+                .category(null)
                 .contactNumber(dto.getContactNumber())
                 .openingHours(dto.getOpeningHours())
                 .build();
@@ -50,7 +50,7 @@ public class RestaurantService {
     }
 
     @Transactional
-    public RestaurantDto register(RestaurantDto dto) {
+    public RestaurantDto create(RestaurantDto dto) {
         Restaurant restaurant = toEntity(dto);
         return toDto(restaurantRepository.save(restaurant));
     }
