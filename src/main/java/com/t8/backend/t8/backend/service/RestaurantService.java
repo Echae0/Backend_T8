@@ -1,7 +1,9 @@
 package com.t8.backend.t8.backend.service;
 
 import com.t8.backend.t8.backend.dto.RestaurantDto;
+import com.t8.backend.t8.backend.entity.Category;
 import com.t8.backend.t8.backend.entity.Restaurant;
+import com.t8.backend.t8.backend.repository.CategoryRepository;
 import com.t8.backend.t8.backend.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,15 +18,35 @@ import java.util.stream.Collectors;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final CategoryRepository categoryRepository;
 
     private Restaurant toEntity(RestaurantDto dto) {
-        // 엔티티 변환 구현 필요
-        return null;
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + dto.getCategoryId()));
+
+        return Restaurant.builder()
+                .restaurantName(dto.getRestaurantName())
+                .location(dto.getLocation())
+                .imageUrl(dto.getImageUrl())
+                .category(category)
+                .contactNumber(dto.getContactNumber())
+                .openingHours(dto.getOpeningHours())
+                .build();
     }
 
     private RestaurantDto toDto(Restaurant entity) {
-        // DTO 변환 구현 필요
-        return null;
+        return RestaurantDto.builder()
+                .id(entity.getId())
+                .restaurantName(entity.getRestaurantName())
+                .location(entity.getLocation())
+                .imageUrl(entity.getImageUrl())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
+                .category(entity.getCategory() != null ? entity.getCategory().getCategoryName() : null)
+                .contactNumber(entity.getContactNumber())
+                .openingHours(entity.getOpeningHours())
+                .build();
     }
 
     @Transactional
@@ -40,7 +62,9 @@ public class RestaurantService {
     }
 
     public List<RestaurantDto> getAll() {
-        return restaurantRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+        return restaurantRepository.findAll().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -48,9 +72,17 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + id));
 
-        // 업데이트 로직 구현 필요
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + dto.getCategoryId()));
 
-        return toDto(restaurantRepository.save(restaurant));
+        restaurant.setRestaurantName(dto.getRestaurantName());
+        restaurant.setLocation(dto.getLocation());
+        restaurant.setImageUrl(dto.getImageUrl());
+        restaurant.setCategory(category);
+        restaurant.setContactNumber(dto.getContactNumber());
+        restaurant.setOpeningHours(dto.getOpeningHours());
+
+        return toDto(restaurant);
     }
 
     @Transactional
