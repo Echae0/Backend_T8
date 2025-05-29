@@ -1,7 +1,6 @@
 package com.t8.backend.t8.backend.entity;
 
 import com.t8.backend.t8.backend.repository.MemberRepository;
-import com.t8.backend.t8.backend.repository.RequestDetailRepository;
 import com.t8.backend.t8.backend.repository.ReservationRepository;
 import com.t8.backend.t8.backend.repository.RestaurantRepository;
 import org.junit.jupiter.api.Test;
@@ -21,13 +20,12 @@ import java.util.Optional;
 
 @SpringBootTest // ⭐ @DataJpaTest 대신 @SpringBootTest 사용
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // 여전히 실제 DB 사용을 원한다면 유지
-@ActiveProfiles("test")
+@ActiveProfiles("prod")
 public class ReservationEntityTest {
 
     @Autowired private MemberRepository memberRepository;
     @Autowired private RestaurantRepository restaurantRepository;
     @Autowired private ReservationRepository reservationRepository;
-    @Autowired private RequestDetailRepository requestDetailRepository;
 
     @Test
     @Transactional // ⭐ @SpringBootTest를 사용할 때는 Transactional 어노테이션을 추가하여 테스트 후 롤백되도록 하는 것이 일반적입니다.
@@ -51,16 +49,12 @@ public class ReservationEntityTest {
                 .restaurant(restaurant)
                 .build();
 
-        // 3. 요청 상세 추가
-        RequestDetail detail1 = RequestDetail.builder().request("창가 자리").build();
-        reservation.addRequestDetail(detail1);
-
         // 4. 저장
         reservationRepository.save(reservation);
 
         // 5. 검증
         Optional<Reservation> result = reservationRepository.findById(reservation.getId());
         assertTrue(result.isPresent());
-        assertEquals(1, result.get().getRequestDetails().size());
+//        assertEquals(1, result.get().getRequestDetails().size());
     }
 }

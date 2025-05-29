@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // 실제 DB 사용 시
 @ActiveProfiles("prod") // application-test.properties 로드
 @Transactional
-@Rollback(true)
+@Rollback(false)
 public class MemberEntityTest {
 
     @Autowired
@@ -31,7 +31,7 @@ public class MemberEntityTest {
 
     @Test
     @Transactional // 테스트 후 데이터 롤백을 위해 추가
-    @Rollback(true) // 테스트가 끝나도 롤백하지 않도록 설정
+    @Rollback(false) // 테스트가 끝나도 롤백하지 않도록 설정
 
     void testSaveMember() {
         // 1. Member 엔티티 생성

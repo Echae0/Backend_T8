@@ -16,13 +16,6 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService; // 필드 이름을 memberService로 변경 (가독성)
 
-    // @Autowired 생성자 주입은 @RequiredArgsConstructor가 대체하므로 삭제합니다.
-    // public MemberController(MemberService service) { this.service = service; }
-
-//    @PostMapping
-//    public ResponseEntity<MemberDto> create(@Valid @RequestBody MemberDto dto) { // MemberDto 그대로 사용
-//        return new ResponseEntity<>(memberService.register(dto), HttpStatus.CREATED); // 201 Created 응답
-//    }
 
     @PostMapping
     public ResponseEntity<MemberDto> create(@Valid @RequestBody MemberDto dto) {

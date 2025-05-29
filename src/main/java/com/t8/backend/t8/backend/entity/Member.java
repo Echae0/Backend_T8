@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "members") // 오타 수정: "memers" → "members"
+@Table(name = "members")
 @EqualsAndHashCode(callSuper = true)
 public class Member extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

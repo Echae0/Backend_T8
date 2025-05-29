@@ -38,9 +38,9 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<RequestDetail> requestDetails = new ArrayList<>();
+//    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @Builder.Default
+////    private List<RequestDetail> requestDetails = new ArrayList<>();
 
     public enum Status {
         REQUESTED("요청됨"),
@@ -57,11 +57,11 @@ public class Reservation extends BaseEntity {
             return description;
         }
     }
-
-    // 연관 관계 편의 메서드
-    public void addRequestDetail(RequestDetail requestDetail) {
-        requestDetails.add(requestDetail);
-        requestDetail.setReservation(this);
-    }
+//
+//    // 연관 관계 편의 메서드
+//    public void addRequestDetail(RequestDetail requestDetail) {
+//        requestDetails.add(requestDetail);
+//        requestDetail.setReservation(this);
+//    }
 }
 
