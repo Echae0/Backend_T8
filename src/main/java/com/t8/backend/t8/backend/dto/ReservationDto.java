@@ -9,6 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ReservationDto {
+    private Long id;
     private String reservationNumber;
     private Integer partySize;
     private LocalDateTime reservedAt;
@@ -16,7 +17,6 @@ public class ReservationDto {
     private Integer predictedWait;
     private Long memberId;
     private Long restaurantId;
-    private Long id;
     private String status;
     private String requestDetail;
 }

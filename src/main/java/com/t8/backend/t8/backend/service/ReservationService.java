@@ -42,6 +42,7 @@ public class ReservationService {
                 .status(Reservation.Status.REQUESTED)
                 .member(member)
                 .restaurant(restaurant)
+                .requestDetail(dto.getRequestDetail())
                 .build();
     }
 
@@ -56,6 +57,7 @@ public class ReservationService {
                 .status(reservation.getStatus().name())
                 .memberId(reservation.getMember() != null ? reservation.getMember().getId() : null)
                 .restaurantId(reservation.getRestaurant() != null ? reservation.getRestaurant().getId() : null)
+                .requestDetail(reservation.getRequestDetail())
                 .build();
     }
 
@@ -67,6 +69,14 @@ public class ReservationService {
         }
         return toDto(reservationRepository.save(reservation));
     }
+
+    public List<ReservationDto> getByRestaurantId(Long restaurantId) {
+        return reservationRepository.findByRestaurantId(restaurantId)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
 
     public ReservationDto getById(Long id) {
         return reservationRepository.findById(id)

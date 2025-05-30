@@ -9,41 +9,60 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reservations")
 @RequiredArgsConstructor
 public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @PostMapping
-    public ResponseEntity<ReservationDto> create(@RequestBody ReservationDto dto) {
-        return ResponseEntity.ok(reservationService.create(dto));
+    // ✅ 특정 식당에 예약 생성
+    @PostMapping("/api/restaurants/{restaurantId}/reservations")
+    public ResponseEntity<ReservationDto> create(
+            @PathVariable Long restaurantId,
+            @RequestBody ReservationDto dto
+    ) {
+        dto.setRestaurantId(restaurantId);  // restaurantId를 DTO에 세팅
+        ReservationDto created = reservationService.create(dto);
+        return ResponseEntity.ok(created);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ReservationDto> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(reservationService.getById(id));
-    }
-
-    @GetMapping
+    // ✅ 모든 예약 조회
+    @GetMapping("/api/reservations")
     public ResponseEntity<List<ReservationDto>> getAll() {
         return ResponseEntity.ok(reservationService.getAll());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ReservationDto> update(@PathVariable Long id, @RequestBody ReservationDto dto) {
+    @GetMapping("/api/restaurants/{restaurantId}/reservations")
+    public ResponseEntity<List<ReservationDto>> getByRestaurant(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(reservationService.getByRestaurantId(restaurantId));
+    }
+
+
+    // ✅ 단건 예약 조회
+    @GetMapping("/api/reservations/{id}")
+    public ResponseEntity<ReservationDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(reservationService.getById(id));
+    }
+
+    // ✅ 예약 수정
+    @PutMapping("/api/reservations/{id}")
+    public ResponseEntity<ReservationDto> update(
+            @PathVariable Long id,
+            @RequestBody ReservationDto dto
+    ) {
         return ResponseEntity.ok(reservationService.update(id, dto));
     }
 
-    @PostMapping("/{id}/cancel")
+    // ✅ 예약 취소
+    @PostMapping("/api/reservations/{id}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable Long id) {
         reservationService.cancel(id);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
+    // ✅ 예약 삭제
+    @DeleteMapping("/api/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationService.cancel(id);
+        reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
