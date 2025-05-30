@@ -36,7 +36,7 @@ public class Member extends BaseEntity {
     private Status status = Status.ACTIVE;
 
     @Builder.Default
-    private Integer maxReservationCount = 5;
+    private Integer maxReservationCount = 0;
 
     @Builder.Default
     private Integer noshowCounts = 0;
