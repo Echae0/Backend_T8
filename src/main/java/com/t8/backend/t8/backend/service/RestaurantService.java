@@ -4,6 +4,7 @@ import com.t8.backend.t8.backend.dto.CategoryDto;
 import com.t8.backend.t8.backend.dto.RestaurantDto;
 import com.t8.backend.t8.backend.entity.Category;
 import com.t8.backend.t8.backend.entity.Restaurant;
+import com.t8.backend.t8.backend.entity.Review;
 import com.t8.backend.t8.backend.repository.CategoryRepository;
 import com.t8.backend.t8.backend.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,6 @@ public class RestaurantService {
 
         Category category = categoryRepository.findByCategoryCode(dto.getCategoryCode())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category code: " + dto.getCategoryCode()));
-
 
         return Restaurant.builder()
                 .restaurantName(dto.getRestaurantName())

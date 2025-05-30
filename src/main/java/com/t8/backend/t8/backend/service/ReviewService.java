@@ -25,10 +25,11 @@ public class ReviewService {
     private final RestaurantRepository restaurantRepository;
 
     // 등록
-    public ReviewDto create(ReviewDto dto) {
+    public ReviewDto create(Long restaurantId, ReviewDto dto) {
         Member member = memberRepository.findById(dto.getMemberId())
                 .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
+
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("식당을 찾을 수 없습니다."));
 
         Review review = Review.builder()
@@ -38,7 +39,9 @@ public class ReviewService {
                 .restaurant(restaurant)
                 .build();
 
+        restaurant.addReview(review);
         Review saved = reviewRepository.save(review);
+
         return toDto(saved);
     }
 
@@ -47,6 +50,16 @@ public class ReviewService {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
         return toDto(review);
+    }
+
+    public List<ReviewDto> getByRestaurantId(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException("식당을 찾을 수 없습니다."));
+
+        return restaurant.getReviews()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     // 전체 조회
