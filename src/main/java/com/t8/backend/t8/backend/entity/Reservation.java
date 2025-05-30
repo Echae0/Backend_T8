@@ -18,9 +18,9 @@ public class Reservation extends BaseEntity {
     private Long id;
 
     private String reservationNumber;
+    private String name;  // 추가됨
 
     private Integer partySize;
-
     private LocalDateTime reservedAt;
     private LocalDateTime joinedAt;
     private Integer predictedWait;
@@ -57,7 +57,6 @@ public class Reservation extends BaseEntity {
         }
     }
 
-    // 연관 관계 편의 메서드
     public void addRequestDetail(RequestDetail requestDetail) {
         requestDetails.add(requestDetail);
         requestDetail.setReservation(this);

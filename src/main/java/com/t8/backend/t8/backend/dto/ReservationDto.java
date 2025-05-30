@@ -9,14 +9,15 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ReservationDto {
+    private Long id;
     private String reservationNumber;
+    private String name;  // 추가됨
     private Integer partySize;
     private LocalDateTime reservedAt;
     private LocalDateTime joinedAt;
     private Integer predictedWait;
     private Long memberId;
     private Long restaurantId;
-    private Long id;
     private String status;
-    private List<String> requestDetails; // 예: 요
+    private List<String> requestDetails; // 선택 메뉴 리스트
 }

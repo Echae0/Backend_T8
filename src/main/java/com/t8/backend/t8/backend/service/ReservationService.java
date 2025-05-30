@@ -1,12 +1,8 @@
 package com.t8.backend.t8.backend.service;
 
 import com.t8.backend.t8.backend.dto.ReservationDto;
-import com.t8.backend.t8.backend.entity.Member;
-import com.t8.backend.t8.backend.entity.Reservation;
-import com.t8.backend.t8.backend.entity.Restaurant;
-import com.t8.backend.t8.backend.repository.MemberRepository;
-import com.t8.backend.t8.backend.repository.ReservationRepository;
-import com.t8.backend.t8.backend.repository.RestaurantRepository;
+import com.t8.backend.t8.backend.entity.*;
+import com.t8.backend.t8.backend.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +29,9 @@ public class ReservationService {
         Member member = dto.getMemberId() != null ? memberRepository.findById(dto.getMemberId()).orElse(null) : null;
         Restaurant restaurant = dto.getRestaurantId() != null ? restaurantRepository.findById(dto.getRestaurantId()).orElse(null) : null;
 
-        return Reservation.builder()
+        Reservation reservation = Reservation.builder()
                 .reservationNumber(dto.getReservationNumber())
+                .name(dto.getName())
                 .partySize(dto.getPartySize())
                 .reservedAt(dto.getReservedAt())
                 .joinedAt(dto.getJoinedAt())
@@ -43,12 +40,24 @@ public class ReservationService {
                 .member(member)
                 .restaurant(restaurant)
                 .build();
+
+        if (dto.getRequestDetails() != null) {
+            for (String content : dto.getRequestDetails()) {
+                RequestDetail detail = RequestDetail.builder()
+                        .content(content)
+                        .build();
+                reservation.addRequestDetail(detail);
+            }
+        }
+
+        return reservation;
     }
 
     private ReservationDto toDto(Reservation reservation) {
         return ReservationDto.builder()
                 .id(reservation.getId())
                 .reservationNumber(reservation.getReservationNumber())
+                .name(reservation.getName())
                 .partySize(reservation.getPartySize())
                 .reservedAt(reservation.getReservedAt())
                 .joinedAt(reservation.getJoinedAt())
@@ -56,6 +65,11 @@ public class ReservationService {
                 .status(reservation.getStatus().name())
                 .memberId(reservation.getMember() != null ? reservation.getMember().getId() : null)
                 .restaurantId(reservation.getRestaurant() != null ? reservation.getRestaurant().getId() : null)
+                .requestDetails(
+                        reservation.getRequestDetails().stream()
+                                .map(RequestDetail::getContent)
+                                .collect(Collectors.toList())
+                )
                 .build();
     }
 
@@ -75,7 +89,9 @@ public class ReservationService {
     }
 
     public List<ReservationDto> getAll() {
-        return reservationRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+        return reservationRepository.findAll().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -83,6 +99,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found with id: " + id));
 
+        reservation.setName(dto.getName());
         reservation.setPartySize(dto.getPartySize());
         reservation.setReservedAt(dto.getReservedAt());
         reservation.setJoinedAt(dto.getJoinedAt());
