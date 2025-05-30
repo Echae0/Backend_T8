@@ -36,6 +36,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getByRestaurantId(restaurantId));
     }
 
+    // ✅ 특정 멤버의 예약 목록 조회
+    @GetMapping("/api/members/{memberId}/reservations")
+    public ResponseEntity<List<ReservationDto>> getByMember(@PathVariable Long memberId) {
+        return ResponseEntity.ok(reservationService.getByMemberId(memberId));
+    }
+
 
     // ✅ 단건 예약 조회
     @GetMapping("/api/reservations/{id}")

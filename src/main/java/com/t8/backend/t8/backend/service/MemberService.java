@@ -22,7 +22,7 @@ public class MemberService {
     private Member toEntity(MemberDto dto) {
         return Member.builder()
                 .id(dto.getId())
-                .memberNumber(dto.getMemberNumber())
+//                .memberNumber(dto.getMemberNumber())
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .phoneNumber(dto.getPhoneNumber())
@@ -37,7 +37,7 @@ public class MemberService {
     private MemberDto toDto(Member member) {
         return MemberDto.builder()
                 .id(member.getId())
-                .memberNumber(member.getMemberNumber())
+//                .memberNumber(member.getMemberNumber())
                 .name(member.getName())
                 .email(member.getEmail())
                 .phoneNumber(member.getPhoneNumber())
@@ -51,12 +51,10 @@ public class MemberService {
                 .build();
     }
 
+
     @Transactional
-    public MemberDto register(MemberDto dto) {
+    public MemberDto create(MemberDto dto) {
         Member member = toEntity(dto);
-        if (member.getMemberNumber() == null || member.getMemberNumber().isEmpty()) {
-            member.setMemberNumber("M-" + System.currentTimeMillis());
-        }
         return toDto(memberRepository.save(member));
     }
 

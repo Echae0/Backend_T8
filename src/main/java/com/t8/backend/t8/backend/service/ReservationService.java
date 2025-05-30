@@ -77,6 +77,13 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    public List<ReservationDto> getByMemberId(Long memberId) {
+        return reservationRepository.findByMemberId(memberId)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
 
     public ReservationDto getById(Long id) {
         return reservationRepository.findById(id)
