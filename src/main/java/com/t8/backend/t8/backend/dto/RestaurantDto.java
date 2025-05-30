@@ -17,7 +17,9 @@ public class RestaurantDto {
     private LocalDateTime updatedAt;
 //    private CategoryDto category;
     private String categoryCode;
-    private List<MenuDto> menus;
+//    private List<ReservationDto> reservations;
+//    private List<ReviewDto> reviews;
+//    private List<MenuDto> menus;
     private String contactNumber;
     private String openingHours;
 }
