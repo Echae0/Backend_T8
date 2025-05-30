@@ -2,6 +2,7 @@ package com.t8.backend.t8.backend.dto;
 
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,7 @@ public class RestaurantDto {
     private LocalDateTime updatedAt;
 //    private CategoryDto category;
     private String categoryCode;
+    private List<MenuDto> menus;
     private String contactNumber;
     private String openingHours;
 }
