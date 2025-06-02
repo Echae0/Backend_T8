@@ -10,6 +10,7 @@ import com.t8.backend.t8.backend.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -131,8 +132,18 @@ public class ReservationService {
         reservation.setPredictedWait(dto.getPredictedWait());
         reservation.setJoinedAt(dto.getJoinedAt());
 
+        // joinedAt 업데이트
+        if (reservation.getReservedAt() != null) {
+            long seconds = java.time.Duration.between(
+                    reservation.getReservedAt(), dto.getJoinedAt()
+            ).getSeconds();
+
+            reservation.setWaitingTime(seconds < 0 ? Duration.ZERO : Duration.ofSeconds(seconds));
+        }
+
         return toDto(reservationRepository.save(reservation));
     }
+
 
     @Transactional
     public void cancel(Long id) {

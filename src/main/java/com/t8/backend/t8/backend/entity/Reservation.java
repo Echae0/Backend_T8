@@ -2,6 +2,8 @@ package com.t8.backend.t8.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,13 +28,13 @@ public class Reservation extends BaseEntity {
     @Column(length = 500)
     private String requestDetail;
 
-    private  Integer turnTime;
+    private  Integer turnTime; // restaurant 참조
     private Integer predictedWait;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime joinedAt;
 
-    private LocalDateTime waitingTime;
+    private Duration waitingTime;
 
 
     @Enumerated(EnumType.STRING)
@@ -48,6 +50,12 @@ public class Reservation extends BaseEntity {
     private Restaurant restaurant;
 
 
+    @PrePersist
+    protected void onCreate() {
+        if (this.reservedAt == null) {
+            this.reservedAt = LocalDateTime.now();
+        }
+    }
 
     public enum Status {
         REQUESTED("요청됨"),

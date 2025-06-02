@@ -23,11 +23,11 @@ public class Review extends BaseEntity {
     private String comment;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime reservedAt;
+    private LocalDateTime reservedAt; // reservation 참조
 
-    private LocalDateTime joinedAt;
+    private LocalDateTime joinedAt; // reservation 참조
 
-    private Duration waitingTime;
+    private Duration waitingTime; // reservation 참조
 
     private Integer rating;
 
