@@ -22,5 +22,4 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     private String categoryName;
 
-    // 🔥 parentCategory, subCategories 제거됨
 }

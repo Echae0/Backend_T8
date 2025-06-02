@@ -42,6 +42,9 @@ public class RestaurantService {
                 .category(category)
                 .contactNumber(dto.getContactNumber())
                 .openingHours(dto.getOpeningHours())
+                .averageRating(dto.getAverageRating())
+                .dailyLimitedTeams(dto.getDailyLimitedTeams())
+                .availableTeams(dto.getAvailableTeams())
                 .build();
     }
 
@@ -61,6 +64,9 @@ public class RestaurantService {
                 .categoryCode(entity.getCategory() != null ? entity.getCategory().getCategoryCode() : null)
                 .contactNumber(entity.getContactNumber())
                 .openingHours(entity.getOpeningHours())
+                .averageRating(entity.getAverageRating())
+                .dailyLimitedTeams(entity.getDailyLimitedTeams())
+                .availableTeams(entity.getAvailableTeams())
                 .build();
     }
 
@@ -104,6 +110,9 @@ public class RestaurantService {
         restaurant.setCategory(category);
         restaurant.setContactNumber(dto.getContactNumber());
         restaurant.setOpeningHours(dto.getOpeningHours());
+        restaurant.setAverageRating(dto.getAverageRating());
+        restaurant.setDailyLimitedTeams(dto.getDailyLimitedTeams());
+        restaurant.setAvailableTeams(dto.getAvailableTeams());
 
         return toDto(restaurantRepository.save(restaurant));
     }
