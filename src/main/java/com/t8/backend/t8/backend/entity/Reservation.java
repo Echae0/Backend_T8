@@ -16,7 +16,7 @@ public class Reservation extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String reservationNumber;
+    private String reservationNumber; // 자동생성 R-YYYYMMDD-memberId+restaurantId+reservationId
 
     private Integer partySize;
 
@@ -64,4 +64,16 @@ public class Reservation extends BaseEntity {
             return description;
         }
     }
+
+    public void generateReservationNumber() {
+        if (this.member == null || this.restaurant == null || this.id == null) {
+            throw new IllegalStateException("member, restaurant, id must not be null when generating reservationNumber");
+        }
+
+        String datePart = this.getCreatedAt().toLocalDate().toString().replace("-", "");
+        String idPart = String.format("%02d%02d%04d", member.getId(), restaurant.getId(), id);
+        this.reservationNumber = "R-" + datePart + "-" + idPart;
+    }
+    //R-20250602-010100
+    //= R-YYYYMMDD-memberId+restaurantId+reservationId
 }

@@ -37,12 +37,16 @@ public class ReservationService {
                 .reservationNumber(dto.getReservationNumber())
                 .partySize(dto.getPartySize())
                 .reservedAt(dto.getReservedAt())
-                .joinedAt(dto.getJoinedAt())
+                .requestDetail(dto.getRequestDetail())
+
+                .turnTime(dto.getTurnTime())
                 .predictedWait(dto.getPredictedWait())
+                .joinedAt(dto.getJoinedAt())
+                .waitingTime(dto.getWaitingTime())
+
                 .status(Reservation.Status.REQUESTED)
                 .member(member)
                 .restaurant(restaurant)
-                .requestDetail(dto.getRequestDetail())
                 .build();
     }
 
@@ -52,23 +56,44 @@ public class ReservationService {
                 .reservationNumber(reservation.getReservationNumber())
                 .partySize(reservation.getPartySize())
                 .reservedAt(reservation.getReservedAt())
-                .joinedAt(reservation.getJoinedAt())
+                .requestDetail(reservation.getRequestDetail())
+
+                .turnTime(reservation.getTurnTime())
                 .predictedWait(reservation.getPredictedWait())
+                .joinedAt(reservation.getJoinedAt())
+                .waitingTime(reservation.getWaitingTime())
+
                 .status(reservation.getStatus().name())
                 .memberId(reservation.getMember() != null ? reservation.getMember().getId() : null)
                 .restaurantId(reservation.getRestaurant() != null ? reservation.getRestaurant().getId() : null)
-                .requestDetail(reservation.getRequestDetail())
                 .build();
     }
 
     @Transactional
     public ReservationDto create(ReservationDto dto) {
         Reservation reservation = toEntity(dto);
+
+        // 먼저 저장하여 reservation.id 생성
+        reservation = reservationRepository.save(reservation);
+
+        // reservationNumber가 비어 있다면 자동 생성
         if (reservation.getReservationNumber() == null || reservation.getReservationNumber().isEmpty()) {
-            reservation.setReservationNumber("R-" + System.currentTimeMillis());
+            String date = reservation.getCreatedAt().toLocalDate().toString().replace("-", "");
+            Long memberId = reservation.getMember() != null ? reservation.getMember().getId() : 0L;
+            Long restaurantId = reservation.getRestaurant() != null ? reservation.getRestaurant().getId() : 0L;
+            Long reservationId = reservation.getId();
+
+            // 숫자 자리수 고정: member(2), restaurant(2), reservation(4)
+            String idPart = String.format("%02d%02d%04d", memberId, restaurantId, reservationId);
+            reservation.setReservationNumber("R-" + date + "-" + idPart);
+
+            // 다시 저장하여 reservationNumber 반영
+            reservation = reservationRepository.save(reservation);
         }
-        return toDto(reservationRepository.save(reservation));
+
+        return toDto(reservation);
     }
+
 
     public List<ReservationDto> getByRestaurantId(Long restaurantId) {
         return reservationRepository.findByRestaurantId(restaurantId)
@@ -101,9 +126,10 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found with id: " + id));
 
         reservation.setPartySize(dto.getPartySize());
-        reservation.setReservedAt(dto.getReservedAt());
-        reservation.setJoinedAt(dto.getJoinedAt());
+        reservation.setRequestDetail(dto.getRequestDetail());
+        reservation.setTurnTime(dto.getTurnTime());
         reservation.setPredictedWait(dto.getPredictedWait());
+        reservation.setJoinedAt(dto.getJoinedAt());
 
         return toDto(reservationRepository.save(reservation));
     }
