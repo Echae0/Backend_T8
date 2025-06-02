@@ -16,8 +16,6 @@ public class Review extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer rating;
-
     private String comment;
 
     @Column(nullable = false, updatable = false)
@@ -27,6 +25,9 @@ public class Review extends BaseEntity {
 
     private LocalDateTime waitingTime;
 
+    private Integer rating;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -35,9 +36,13 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id", nullable = false)
+    private Reservation reservation;
+
+
     @PrePersist
     protected void onCreate() {
-//        super.onCreate();
         this.reservedAt = LocalDateTime.now();
     }
 }

@@ -2,9 +2,11 @@ package com.t8.backend.t8.backend.service;
 
 import com.t8.backend.t8.backend.dto.ReviewDto;
 import com.t8.backend.t8.backend.entity.Member;
+import com.t8.backend.t8.backend.entity.Reservation;
 import com.t8.backend.t8.backend.entity.Restaurant;
 import com.t8.backend.t8.backend.entity.Review;
 import com.t8.backend.t8.backend.repository.MemberRepository;
+import com.t8.backend.t8.backend.repository.ReservationRepository;
 import com.t8.backend.t8.backend.repository.RestaurantRepository;
 import com.t8.backend.t8.backend.repository.ReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,6 +25,8 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final RestaurantRepository restaurantRepository;
+    private final ReservationRepository reservationRepository;
+
 
     // 등록
     public ReviewDto create(Long restaurantId, ReviewDto dto) {
@@ -32,11 +36,15 @@ public class ReviewService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("식당을 찾을 수 없습니다."));
 
+        Reservation reservation = reservationRepository.findById(dto.getReservationId())
+                .orElseThrow(() -> new EntityNotFoundException("예약을 찾을 수 없습니다."));
+
         Review review = Review.builder()
                 .rating(dto.getRating())
                 .comment(dto.getComment())
                 .member(member)
                 .restaurant(restaurant)
+                .reservation(reservation)
                 .build();
 
         restaurant.addReview(review);
@@ -82,11 +90,14 @@ public class ReviewService {
                 .rating(review.getRating())
                 .comment(review.getComment())
                 .reservedAt(review.getReservedAt())
+                .joinedAt(review.getJoinedAt())
+                .waitingTime(review.getWaitingTime())
                 .memberId(review.getMember().getId())
                 .memberName(review.getMember().getName()) // 선택
                 .restaurantId(review.getRestaurant().getId())
                 .restaurantName(review.getRestaurant().getRestaurantName())
-
+                .reservationId(review.getReservation().getId())
+                .reservationNumber(review.getReservation().getReservationNumber())
                 .build();
     }
 
