@@ -39,6 +39,8 @@ public class RestaurantService {
         return Restaurant.builder()
                 .restaurantName(dto.getRestaurantName())
                 .location(dto.getLocation())
+                .description(dto.getDescription())
+                .parking(dto.getParking())
                 .imageUrl(dto.getImageUrl())
                 .category(category)
                 .contactNumber(dto.getContactNumber())
@@ -54,6 +56,8 @@ public class RestaurantService {
                 .id(entity.getId())
                 .restaurantName(entity.getRestaurantName())
                 .location(entity.getLocation())
+                .description(entity.getDescription())
+                .parking(entity.getParking())
                 .imageUrl(entity.getImageUrl())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
@@ -107,6 +111,8 @@ public class RestaurantService {
 
         restaurant.setRestaurantName(dto.getRestaurantName());
         restaurant.setLocation(dto.getLocation());
+        restaurant.setDescription(dto.getDescription());
+        restaurant.setParking(dto.getParking());
         restaurant.setImageUrl(dto.getImageUrl());
         restaurant.setCategory(category);
         restaurant.setContactNumber(dto.getContactNumber());

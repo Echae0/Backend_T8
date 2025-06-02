@@ -25,6 +25,8 @@ public class Restaurant extends BaseEntity {
     private String restaurantName;
 
     private String location;
+    private String description;
+    private String parking;
 
     private String imageUrl;
 
