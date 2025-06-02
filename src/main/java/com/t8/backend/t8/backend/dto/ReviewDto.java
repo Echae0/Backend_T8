@@ -27,4 +27,6 @@ public class ReviewDto {
 
     private Long reservationId;       // 추가: 입력 시 사용
     private String reservationNumber; // 추가: 응답 시 사용
+
+
 }

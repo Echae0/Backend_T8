@@ -31,6 +31,18 @@ public class Review extends BaseEntity {
 
     private Integer rating;
 
+    public LocalDateTime getReservedAt() {
+        return this.reservation != null ? this.reservation.getReservedAt() : null;
+    }
+
+    public LocalDateTime getJoinedAt() {
+        return this.reservation != null ? this.reservation.getJoinedAt() : null;
+    }
+
+    public Duration getWaitingTime() {
+        return this.reservation != null ? this.reservation.getWaitingTime() : null;
+    }
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

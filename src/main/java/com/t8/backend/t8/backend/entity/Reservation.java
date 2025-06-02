@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "reservations")
@@ -48,6 +49,9 @@ public class Reservation extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = true)
     private Restaurant restaurant;
+
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
+    private List<Review> reviews;
 
 
     @PrePersist
