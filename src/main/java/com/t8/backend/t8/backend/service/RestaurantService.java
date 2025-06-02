@@ -3,6 +3,7 @@ package com.t8.backend.t8.backend.service;
 import com.t8.backend.t8.backend.dto.CategoryDto;
 import com.t8.backend.t8.backend.dto.RestaurantDto;
 import com.t8.backend.t8.backend.entity.Category;
+import com.t8.backend.t8.backend.entity.Member;
 import com.t8.backend.t8.backend.entity.Restaurant;
 import com.t8.backend.t8.backend.entity.Review;
 import com.t8.backend.t8.backend.repository.CategoryRepository;
@@ -42,7 +43,7 @@ public class RestaurantService {
                 .category(category)
                 .contactNumber(dto.getContactNumber())
                 .openingHours(dto.getOpeningHours())
-                .averageRating(dto.getAverageRating())
+                .averageRating(dto.getAverageRating() != null ? dto.getAverageRating() : 0.0)
                 .dailyLimitedTeams(dto.getDailyLimitedTeams())
                 .availableTeams(dto.getAvailableTeams())
                 .build();

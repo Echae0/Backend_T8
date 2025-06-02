@@ -38,11 +38,9 @@ public class Restaurant extends BaseEntity {
     @Builder.Default
     private Double averageRating = 0.0;
 
-    @Builder.Default
-    private Integer dailyLimitedTeams = 10;
+    private Integer dailyLimitedTeams;
 
-    @Builder.Default
-    private Integer availableTeams = 10;
+    private Integer availableTeams;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
