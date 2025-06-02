@@ -3,6 +3,8 @@ package com.t8.backend.t8.backend.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,7 +25,7 @@ public class Review extends BaseEntity {
 
     private LocalDateTime joinedAt;
 
-    private LocalDateTime waitingTime;
+    private Duration waitingTime;
 
     private Integer rating;
 
@@ -42,7 +44,14 @@ public class Review extends BaseEntity {
 
 
     @PrePersist
-    protected void onCreate() {
-        this.reservedAt = LocalDateTime.now();
+    @PreUpdate
+    protected void preSave() {
+        if (this.reservedAt == null) {
+            this.reservedAt = LocalDateTime.now();
+        }
+        if (this.joinedAt != null && this.reservedAt != null) {
+            Duration duration = Duration.between(reservedAt, joinedAt);
+            this.waitingTime = duration.isNegative() ? Duration.ZERO : duration;
+        }
     }
 }
