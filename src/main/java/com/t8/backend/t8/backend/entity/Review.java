@@ -21,9 +21,11 @@ public class Review extends BaseEntity {
     private String comment;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime reservedAt;
 
     private LocalDateTime joinedAt;
+
+    private LocalDateTime waitingTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
@@ -36,6 +38,6 @@ public class Review extends BaseEntity {
     @PrePersist
     protected void onCreate() {
 //        super.onCreate();
-        this.createdAt = LocalDateTime.now();
+        this.reservedAt = LocalDateTime.now();
     }
 }

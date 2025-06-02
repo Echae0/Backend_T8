@@ -28,7 +28,12 @@ public class Reservation extends BaseEntity {
 
     private  Integer turnTime;
     private Integer predictedWait;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime joinedAt;
+
+    private LocalDateTime waitingTime;
+
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

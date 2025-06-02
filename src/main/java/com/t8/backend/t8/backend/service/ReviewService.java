@@ -81,7 +81,7 @@ public class ReviewService {
                 .id(review.getId())
                 .rating(review.getRating())
                 .comment(review.getComment())
-                .createdAt(review.getCreatedAt())
+                .reservedAt(review.getReservedAt())
                 .memberId(review.getMember().getId())
                 .memberName(review.getMember().getName()) // 선택
                 .restaurantId(review.getRestaurant().getId())

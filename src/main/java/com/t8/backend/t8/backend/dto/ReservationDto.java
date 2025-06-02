@@ -12,9 +12,11 @@ public class ReservationDto {
     private Long id;
     private String reservationNumber;
     private Integer partySize;
+    private  Integer turnTime;
+    private Integer predictedWait;
     private LocalDateTime reservedAt;
     private LocalDateTime joinedAt;
-    private Integer predictedWait;
+    private LocalDateTime waitingTime;
     private Long memberId;
     private Long restaurantId;
     private String status;
