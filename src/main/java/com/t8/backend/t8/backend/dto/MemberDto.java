@@ -18,9 +18,12 @@ public class MemberDto {
     private String phoneNumber;
     private String address;
     private LocalDate birthDate;
-    private Member.Status status; // Member 엔티티의 Status Enum 사용
-    private Integer maxReservationCount;
-    private Integer noshowCounts;
+    @Builder.Default
+    private Member.Status status = Member.Status.ACTIVE;
+    @Builder.Default
+    private Integer maxReservationCount = 0;
+    @Builder.Default
+    private Integer noshowCounts = 0;
     private LocalDateTime createdAt; // BaseEntity 필드 추가
     private LocalDateTime updatedAt; // BaseEntity 필드 추가
 }

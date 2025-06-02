@@ -19,25 +19,39 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
+//    private Member toEntity(MemberDto dto) {
+//        return Member.builder()
+//                .id(dto.getId())
+////                .memberNumber(dto.getMemberNumber())
+//                .name(dto.getName())
+//                .email(dto.getEmail())
+//                .phoneNumber(dto.getPhoneNumber())
+//                .address(dto.getAddress())
+//                .birthDate(dto.getBirthDate())
+//                .status(dto.getStatus())
+//                .maxReservationCount(dto.getMaxReservationCount())
+//                .noshowCounts(dto.getNoshowCounts())
+//                .build();
+//    }
     private Member toEntity(MemberDto dto) {
-        return Member.builder()
+        Member.MemberBuilder builder = Member.builder()
                 .id(dto.getId())
-//                .memberNumber(dto.getMemberNumber())
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .phoneNumber(dto.getPhoneNumber())
                 .address(dto.getAddress())
                 .birthDate(dto.getBirthDate())
-                .status(dto.getStatus())
-                .maxReservationCount(dto.getMaxReservationCount())
-                .noshowCounts(dto.getNoshowCounts())
-                .build();
+                .status(dto.getStatus() != null ? dto.getStatus() : Member.Status.ACTIVE)
+                .maxReservationCount(dto.getMaxReservationCount() != null ? dto.getMaxReservationCount() : 0)
+                .noshowCounts(dto.getNoshowCounts() != null ? dto.getNoshowCounts() : 0);
+
+        return builder.build();
     }
 
+
     private MemberDto toDto(Member member) {
-        return MemberDto.builder()
+        MemberDto.MemberDtoBuilder builder = MemberDto.builder()
                 .id(member.getId())
-//                .memberNumber(member.getMemberNumber())
                 .name(member.getName())
                 .email(member.getEmail())
                 .phoneNumber(member.getPhoneNumber())
@@ -47,9 +61,11 @@ public class MemberService {
                 .maxReservationCount(member.getMaxReservationCount())
                 .noshowCounts(member.getNoshowCounts())
                 .createdAt(member.getCreatedAt())
-                .updatedAt(member.getUpdatedAt())
-                .build();
+                .updatedAt(member.getUpdatedAt());
+
+        return builder.build();
     }
+
 
 
     @Transactional
