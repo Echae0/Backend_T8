@@ -21,8 +21,14 @@ public class Reservation extends BaseEntity {
     private Integer partySize;
 
     private LocalDateTime reservedAt;
-    private LocalDateTime joinedAt;
+
+    // ✅ 단일 요청사항 텍스트 필드
+    @Column(length = 500)
+    private String requestDetail;
+
+    private  Integer turnTime;
     private Integer predictedWait;
+    private LocalDateTime joinedAt;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
@@ -36,9 +42,7 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "restaurant_id", nullable = true)
     private Restaurant restaurant;
 
-    // ✅ 단일 요청사항 텍스트 필드
-    @Column(length = 500)
-    private String requestDetail;
+
 
     public enum Status {
         REQUESTED("요청됨"),
