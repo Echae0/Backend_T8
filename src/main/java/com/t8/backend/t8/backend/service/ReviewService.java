@@ -40,8 +40,12 @@ public class ReviewService {
                 .orElseThrow(() -> new EntityNotFoundException("예약을 찾을 수 없습니다."));
 
         Review review = Review.builder()
-                .rating(dto.getRating())
+                .imageUrl(dto.getImageUrl())
                 .comment(dto.getComment())
+                .reservedAt(dto.getReservedAt())
+                .joinedAt(dto.getJoinedAt())
+                .waitingTime(dto.getWaitingTime())
+                .rating(dto.getRating())
                 .member(member)
                 .restaurant(restaurant)
                 .reservation(reservation)
@@ -87,6 +91,7 @@ public class ReviewService {
     private ReviewDto toDto(Review review) {
         return ReviewDto.builder()
                 .id(review.getId())
+                .imageUrl(review.getImageUrl())
                 .rating(review.getRating())
                 .comment(review.getComment())
                 .reservedAt(review.getReservedAt())

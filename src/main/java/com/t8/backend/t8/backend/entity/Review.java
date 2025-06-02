@@ -18,6 +18,8 @@ public class Review extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String imageUrl;
+
     private String comment;
 
     @Column(nullable = false, updatable = false)

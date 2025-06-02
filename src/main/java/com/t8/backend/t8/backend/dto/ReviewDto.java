@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ReviewDto {
     private Long id;                  // 응답 시 사용
+    private String imageUrl;
     private String comment;          // 공통 (입력 + 출력)
     private LocalDateTime reservedAt;
     private LocalDateTime joinedAt;
