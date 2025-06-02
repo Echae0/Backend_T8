@@ -126,19 +126,31 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found with id: " + id));
 
+        // 필드 업데이트
         reservation.setPartySize(dto.getPartySize());
         reservation.setRequestDetail(dto.getRequestDetail());
         reservation.setTurnTime(dto.getTurnTime());
         reservation.setPredictedWait(dto.getPredictedWait());
-        reservation.setJoinedAt(dto.getJoinedAt());
 
-        // joinedAt 업데이트
-        if (reservation.getReservedAt() != null) {
-            long seconds = java.time.Duration.between(
-                    reservation.getReservedAt(), dto.getJoinedAt()
-            ).getSeconds();
+        // joinedAt 업데이트 (null 체크 추가)
+        if (dto.getJoinedAt() != null) {
+            reservation.setJoinedAt(dto.getJoinedAt());
 
-            reservation.setWaitingTime(seconds < 0 ? Duration.ZERO : Duration.ofSeconds(seconds));
+            // waitingTime 계산 (null 체크 강화)
+            if (reservation.getReservedAt() != null && dto.getJoinedAt() != null) {
+                try {
+                    Duration waitingDuration = Duration.between(
+                            reservation.getReservedAt(),
+                            dto.getJoinedAt()
+                    );
+                    reservation.setWaitingTime(waitingDuration.isNegative() ? Duration.ZERO : waitingDuration);
+                } catch (NullPointerException e) {
+//                    log.error("Failed to calculate waiting time: {}", e.getMessage());
+                    reservation.setWaitingTime(Duration.ZERO);
+                }
+            } else {
+                reservation.setWaitingTime(Duration.ZERO);
+            }
         }
 
         return toDto(reservationRepository.save(reservation));

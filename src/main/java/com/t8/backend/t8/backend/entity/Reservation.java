@@ -31,7 +31,7 @@ public class Reservation extends BaseEntity {
     private  Integer turnTime; // restaurant 참조
     private Integer predictedWait;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "joined_at")
     private LocalDateTime joinedAt;
 
     private Duration waitingTime;
