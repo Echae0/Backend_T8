@@ -12,7 +12,7 @@ import java.time.LocalDateTime; // createdAt, updatedAt을 위해 추가
 @Builder
 public class MemberDto {
     private Long id;
-    private String memberNumber;
+//    private String memberNumber;
     private String name;
     private String email;
     private String phoneNumber;

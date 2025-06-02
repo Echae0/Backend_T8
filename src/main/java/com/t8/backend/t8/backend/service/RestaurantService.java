@@ -1,8 +1,10 @@
 package com.t8.backend.t8.backend.service;
 
+import com.t8.backend.t8.backend.dto.CategoryDto;
 import com.t8.backend.t8.backend.dto.RestaurantDto;
 import com.t8.backend.t8.backend.entity.Category;
 import com.t8.backend.t8.backend.entity.Restaurant;
+import com.t8.backend.t8.backend.entity.Review;
 import com.t8.backend.t8.backend.repository.CategoryRepository;
 import com.t8.backend.t8.backend.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,14 +24,22 @@ public class RestaurantService {
     private final CategoryRepository categoryRepository;
 
     private Restaurant toEntity(RestaurantDto dto) {
-//        Category category = categoryRepository.findById(dto.getCategoryId())
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + dto.getCategoryId()));
+//        Category category = Optional.ofNullable(dto.getCategory())
+//                .map(catDto -> Category.builder()
+//                        .id(catDto.getId())
+//                        .categoryCode(catDto.getCategoryCode())
+//                        .categoryName(catDto.getCategoryName())
+//                        .build())
+//                .orElseThrow(() -> new IllegalArgumentException("Category is required"));
+
+        Category category = categoryRepository.findByCategoryCode(dto.getCategoryCode())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category code: " + dto.getCategoryCode()));
 
         return Restaurant.builder()
                 .restaurantName(dto.getRestaurantName())
                 .location(dto.getLocation())
                 .imageUrl(dto.getImageUrl())
-                .category(null)
+                .category(category)
                 .contactNumber(dto.getContactNumber())
                 .openingHours(dto.getOpeningHours())
                 .build();
@@ -42,8 +53,12 @@ public class RestaurantService {
                 .imageUrl(entity.getImageUrl())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
-                .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
-                .category(entity.getCategory() != null ? entity.getCategory().getCategoryName() : null)
+//                .category(entity.getCategory() != null ? CategoryDto.builder()
+//                        .id(entity.getCategory().getId())
+//                        .categoryCode(entity.getCategory().getCategoryCode())
+//                        .categoryName(entity.getCategory().getCategoryName())
+//                        .build() : null)
+                .categoryCode(entity.getCategory() != null ? entity.getCategory().getCategoryCode() : null)
                 .contactNumber(entity.getContactNumber())
                 .openingHours(entity.getOpeningHours())
                 .build();
@@ -72,13 +87,21 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + id));
 
-//        Category category = categoryRepository.findById(dto.getCategoryId())
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + dto.getCategoryId()));
+//        Category category = Optional.ofNullable(dto.getCategory())
+//                .map(catDto -> Category.builder()
+//                        .id(catDto.getId())
+//                        .categoryCode(catDto.getCategoryCode())
+//                        .categoryName(catDto.getCategoryName())
+//                        .build())
+//                .orElseThrow(() -> new IllegalArgumentException("Category is required"));
+
+        Category category = categoryRepository.findByCategoryCode(dto.getCategoryCode())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category code: " + dto.getCategoryCode()));
 
         restaurant.setRestaurantName(dto.getRestaurantName());
         restaurant.setLocation(dto.getLocation());
         restaurant.setImageUrl(dto.getImageUrl());
-        restaurant.setCategory(null);
+        restaurant.setCategory(category);
         restaurant.setContactNumber(dto.getContactNumber());
         restaurant.setOpeningHours(dto.getOpeningHours());
 

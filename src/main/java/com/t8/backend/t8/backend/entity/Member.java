@@ -17,8 +17,8 @@ public class Member extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String memberNumber;
+//    @Column(nullable = false, unique = true)
+//    private String memberNumber;
 
     @Column(nullable = false)
     private String name;
@@ -36,7 +36,7 @@ public class Member extends BaseEntity {
     private Status status = Status.ACTIVE;
 
     @Builder.Default
-    private Integer maxReservationCount = 5;
+    private Integer maxReservationCount = 0;
 
     @Builder.Default
     private Integer noshowCounts = 0;

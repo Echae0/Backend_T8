@@ -52,6 +52,11 @@ public class Restaurant extends BaseEntity {
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
 
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Menu> menus = new ArrayList<>();
+
+
     // 연관 관계 편의 메서드
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);
@@ -62,6 +67,11 @@ public class Restaurant extends BaseEntity {
         reviews.add(review);
         review.setRestaurant(this);
         calculateAverageRating();
+    }
+
+    public void addMenu(Menu menu) {
+        menus.add(menu);
+        menu.setRestaurant(this);
     }
 
     private void calculateAverageRating() {
