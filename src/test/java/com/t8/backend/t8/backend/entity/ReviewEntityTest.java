@@ -33,7 +33,7 @@ public class ReviewEntityTest {
     void testReviewIntegrationFlow() {
         // 1. 회원 및 식당 생성
         Member member = memberRepository.save(Member.builder()
-                .memberNumber("MEMBER-" + System.currentTimeMillis())
+//                .memberNumber("MEMBER-" + System.currentTimeMillis())
                 .name("리뷰작성자")
                 .email("reviewer" + System.currentTimeMillis() + "@test.com")
                 .build());

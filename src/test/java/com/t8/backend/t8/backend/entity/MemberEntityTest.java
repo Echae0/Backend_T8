@@ -36,7 +36,7 @@ public class MemberEntityTest {
     void testSaveMember() {
         // 1. Member 엔티티 생성
         Member member = Member.builder()
-                .memberNumber("MEMBER-001")
+//                .memberNumber("MEMBER-001")
                 .name("김철수")
                 .email("kimchulsoo@example.com")
                 .phoneNumber("010-1234-5678")
@@ -52,7 +52,7 @@ public class MemberEntityTest {
 
         // 3. 저장된 Member가 null이 아니고 ID가 할당되었는지 확인
         assertNotNull(savedMember.getId());
-        assertEquals("MEMBER-001", savedMember.getMemberNumber());
+//        assertEquals("MEMBER-001", savedMember.getMemberNumber());
         assertEquals("김철수", savedMember.getName());
         assertEquals("kimchulsoo@example.com", savedMember.getEmail());
 

@@ -5,6 +5,7 @@ import com.t8.backend.t8.backend.service.MemberService; // MemberService 클래�
 import lombok.RequiredArgsConstructor; // Lombok 어노테이션 추가
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid; // 유효성 검증을 위해 추가
@@ -24,11 +25,13 @@ public class MemberController {
 
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<MemberDto>> list() { // MemberDto 리스트 반환
         return ResponseEntity.ok(memberService.getAll());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<MemberDto> get(@PathVariable Long id) { // MemberDto 반환
         return ResponseEntity.ok(memberService.getById(id));
     }
