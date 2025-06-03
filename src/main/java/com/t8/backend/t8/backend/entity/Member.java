@@ -1,5 +1,6 @@
 package com.t8.backend.t8.backend.entity;
 
+import com.t8.backend.t8.backend.security.entity.UserInfo;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -71,4 +72,9 @@ public class Member extends BaseEntity {
             return description;
         }
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_info_id")
+    private UserInfo userInfo;
+
 }
