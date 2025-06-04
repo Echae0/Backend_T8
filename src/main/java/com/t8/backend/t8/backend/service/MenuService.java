@@ -44,7 +44,8 @@ public class MenuService {
         menu.setName(request.getName());
         menu.setDescription(request.getDescription());
         menu.setPrice(request.getPrice());
-        menu.setAvailable(request.getAvailable());
+//        menu.setAvailable(request.getAvailable());
+        menu.setAvailable(request.getAvailable() != null ? request.getAvailable() : true);
         menu.setImageUrl(request.getImageUrl());
         menu.setRestaurant(rest);
 
