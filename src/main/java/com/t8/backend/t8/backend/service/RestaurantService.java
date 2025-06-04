@@ -7,6 +7,7 @@ import com.t8.backend.t8.backend.entity.Member;
 import com.t8.backend.t8.backend.entity.Restaurant;
 import com.t8.backend.t8.backend.entity.Review;
 import com.t8.backend.t8.backend.repository.CategoryRepository;
+import com.t8.backend.t8.backend.repository.ReservationRepository;
 import com.t8.backend.t8.backend.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final CategoryRepository categoryRepository;
+    private final ReservationRepository reservationRepository;
+
 
     private Restaurant toEntity(RestaurantDto dto) {
 //        Category category = Optional.ofNullable(dto.getCategory())
@@ -48,10 +51,15 @@ public class RestaurantService {
                 .averageRating(dto.getAverageRating() != null ? dto.getAverageRating() : 0.0)
                 .dailyLimitedTeams(dto.getDailyLimitedTeams())
                 .availableTeams(dto.getAvailableTeams())
-                .build();
-    }
+                .CurrentWaitingTeams(dto.getCurrentWaitingTeams() != null ? dto.getCurrentWaitingTeams() : 0)
+                .PredictedWaitingTime(dto.getPredictedWaitingTime() != null ? dto.getPredictedWaitingTime() : 0)
+                .build();    }
 
     private RestaurantDto toDto(Restaurant entity) {
+
+        int reservationCount = reservationRepository.findActiveByRestaurantId(entity.getId()).size();
+        int predicted = reservationCount * getRandomMultiplier();
+
         return RestaurantDto.builder()
                 .id(entity.getId())
                 .restaurantName(entity.getRestaurantName())
@@ -72,13 +80,27 @@ public class RestaurantService {
                 .averageRating(entity.getAverageRating())
                 .dailyLimitedTeams(entity.getDailyLimitedTeams())
                 .availableTeams(entity.getAvailableTeams())
+                .CurrentWaitingTeams(entity.getCurrentWaitingTeams())
+                .PredictedWaitingTime(entity.getPredictedWaitingTime())
+                .CurrentWaitingTeams(reservationCount)
+                .PredictedWaitingTime(predicted)
                 .build();
     }
 
     @Transactional
     public RestaurantDto create(RestaurantDto dto) {
         Restaurant restaurant = toEntity(dto);
-        return toDto(restaurantRepository.save(restaurant));
+
+        Restaurant saved = restaurantRepository.save(restaurant);
+
+        int reservationCount = reservationRepository.findActiveByRestaurantId(saved.getId()).size();
+        int predicted = reservationCount * getRandomMultiplier();
+
+        saved.setCurrentWaitingTeams(reservationCount);
+        saved.setPredictedWaitingTime(predicted);
+        restaurantRepository.save(saved); // 업데이트 반영
+
+        return toDto(saved);
     }
 
     public RestaurantDto getById(Long id) {
@@ -121,7 +143,16 @@ public class RestaurantService {
         restaurant.setDailyLimitedTeams(dto.getDailyLimitedTeams());
         restaurant.setAvailableTeams(dto.getAvailableTeams());
 
+        int reservationCount = reservationRepository.findActiveByRestaurantId(id).size();
+        restaurant.setCurrentWaitingTeams(reservationCount);
+        restaurant.setPredictedWaitingTime(reservationCount * getRandomMultiplier());
+
         return toDto(restaurantRepository.save(restaurant));
+    }
+
+    private int getRandomMultiplier() {
+        int[] multipliers = {3, 4, 5};
+        return multipliers[(int) (Math.random() * multipliers.length)];
     }
 
     @Transactional

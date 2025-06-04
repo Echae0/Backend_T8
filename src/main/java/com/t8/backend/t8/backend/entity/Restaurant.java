@@ -41,8 +41,13 @@ public class Restaurant extends BaseEntity {
     private Double averageRating = 0.0;
 
     private Integer dailyLimitedTeams;
-
     private Integer availableTeams;
+
+    @Builder.Default
+    private Integer CurrentWaitingTeams = 0;
+
+    @Builder.Default
+    private Integer PredictedWaitingTime = 0;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
