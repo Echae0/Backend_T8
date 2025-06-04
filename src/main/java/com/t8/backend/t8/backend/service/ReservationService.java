@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,21 +76,28 @@ public class ReservationService {
     public ReservationDto create(ReservationDto dto) {
         Reservation reservation = toEntity(dto);
 
-        // 먼저 저장하여 reservation.id 생성
+        if (reservation.getRestaurant() != null) {
+            int count = reservationRepository.countByRestaurantAndStatus(
+                    reservation.getRestaurant(), Reservation.Status.REQUESTED);
+            int turnTime = count + 1;
+            reservation.setTurnTime(turnTime);
+
+            // ✅ predictedWait = turnTime × (3~5 중 랜덤값)
+            int randomMultiplier = 3 + (int)(Math.random() * 3); // 3, 4, 5
+            reservation.setPredictedWait(turnTime * randomMultiplier);
+        }
+
         reservation = reservationRepository.save(reservation);
 
-        // reservationNumber가 비어 있다면 자동 생성
         if (reservation.getReservationNumber() == null || reservation.getReservationNumber().isEmpty()) {
             String date = reservation.getCreatedAt().toLocalDate().toString().replace("-", "");
             Long memberId = reservation.getMember() != null ? reservation.getMember().getId() : 0L;
             Long restaurantId = reservation.getRestaurant() != null ? reservation.getRestaurant().getId() : 0L;
             Long reservationId = reservation.getId();
 
-            // 숫자 자리수 고정: member(2), restaurant(2), reservation(4)
             String idPart = String.format("%02d%02d%04d", memberId, restaurantId, reservationId);
             reservation.setReservationNumber("R-" + date + "-" + idPart);
 
-            // 다시 저장하여 reservationNumber 반영
             reservation = reservationRepository.save(reservation);
         }
 
@@ -96,19 +105,74 @@ public class ReservationService {
     }
 
 
+
+
+//    public List<ReservationDto> getByRestaurantId(Long restaurantId) {
+//        return reservationRepository.findActiveByRestaurantId(restaurantId)
+//                .stream()
+//                .map(this::toDto)
+//                .collect(Collectors.toList());
+//    }
+
+    @Transactional
     public List<ReservationDto> getByRestaurantId(Long restaurantId) {
-        return reservationRepository.findByRestaurantId(restaurantId)
-                .stream()
+        List<Reservation> reservations = reservationRepository.findActiveByRestaurantId(restaurantId);
+
+        reservations.sort((r1, r2) -> r1.getCreatedAt().compareTo(r2.getCreatedAt()));
+
+        for (int i = 0; i < reservations.size(); i++) {
+            Reservation reservation = reservations.get(i);
+            int turnTime = i + 1;
+            reservation.setTurnTime(turnTime);
+
+            int randomMultiplier = 3 + (int)(Math.random() * 3); // 3, 4, 5
+            reservation.setPredictedWait(turnTime * randomMultiplier);
+        }
+
+        reservationRepository.saveAll(reservations);
+
+        return reservations.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
+//    public List<ReservationDto> getByMemberId(Long memberId) {
+//        return reservationRepository.findByMemberId(memberId)
+//                .stream()
+//                .map(this::toDto)
+//                .collect(Collectors.toList());
+//    }
+
+    @Transactional
     public List<ReservationDto> getByMemberId(Long memberId) {
-        return reservationRepository.findByMemberId(memberId)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+        List<Reservation> reservations = reservationRepository.findByMemberId(memberId);
+
+        Map<Restaurant, List<Reservation>> groupedByRestaurant = reservations.stream()
+                .filter(r -> r.getRestaurant() != null && r.getStatus() == Reservation.Status.REQUESTED)
+                .collect(Collectors.groupingBy(Reservation::getRestaurant));
+
+        for (Map.Entry<Restaurant, List<Reservation>> entry : groupedByRestaurant.entrySet()) {
+            Restaurant restaurant = entry.getKey();
+            List<Reservation> activeReservations = reservationRepository.findActiveByRestaurantId(restaurant.getId());
+
+            activeReservations.sort((a, b) -> a.getCreatedAt().compareTo(b.getCreatedAt()));
+
+            for (int i = 0; i < activeReservations.size(); i++) {
+                Reservation r = activeReservations.get(i);
+                int turnTime = i + 1;
+                r.setTurnTime(turnTime);
+
+                int randomMultiplier = 3 + (int)(Math.random() * 3); // 3, 4, 5
+                r.setPredictedWait(turnTime * randomMultiplier);
+            }
+
+            reservationRepository.saveAll(activeReservations);
+        }
+
+        return reservations.stream().map(this::toDto).collect(Collectors.toList());
     }
+
+
 
 
     public ReservationDto getById(Long id) {
@@ -126,28 +190,27 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found with id: " + id));
 
+        // 기존 상태 저장
+        Reservation.Status oldStatus = reservation.getStatus();
+        Reservation.Status newStatus = Reservation.Status.valueOf(dto.getStatus());
+
         // 필드 업데이트
         reservation.setPartySize(dto.getPartySize());
         reservation.setRequestDetail(dto.getRequestDetail());
         reservation.setTurnTime(dto.getTurnTime());
         reservation.setPredictedWait(dto.getPredictedWait());
 
-        // joinedAt 업데이트 (null 체크 추가)
-        if (dto.getJoinedAt() != null) {
-            reservation.setJoinedAt(dto.getJoinedAt());
+        // 상태 업데이트
+        reservation.setStatus(newStatus);
 
-            // waitingTime 계산 (null 체크 강화)
-            if (reservation.getReservedAt() != null && dto.getJoinedAt() != null) {
-                try {
-                    Duration waitingDuration = Duration.between(
-                            reservation.getReservedAt(),
-                            dto.getJoinedAt()
-                    );
-                    reservation.setWaitingTime(waitingDuration.isNegative() ? Duration.ZERO : waitingDuration);
-                } catch (NullPointerException e) {
-//                    log.error("Failed to calculate waiting time: {}", e.getMessage());
-                    reservation.setWaitingTime(Duration.ZERO);
-                }
+        // ✅ 상태가 JOINED로 바뀌는 경우: joinedAt과 waitingTime 계산
+        if (oldStatus != Reservation.Status.JOINED && newStatus == Reservation.Status.JOINED) {
+            LocalDateTime now = LocalDateTime.now();
+            reservation.setJoinedAt(now);
+
+            if (reservation.getReservedAt() != null) {
+                Duration waitingDuration = Duration.between(reservation.getReservedAt(), now);
+                reservation.setWaitingTime(waitingDuration.isNegative() ? Duration.ZERO : waitingDuration);
             } else {
                 reservation.setWaitingTime(Duration.ZERO);
             }

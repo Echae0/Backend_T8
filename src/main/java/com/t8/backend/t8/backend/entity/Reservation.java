@@ -30,7 +30,7 @@ public class Reservation extends BaseEntity {
     private String requestDetail;
 
     private  Integer turnTime; // restaurant 참조
-    private Integer predictedWait;
+    private Integer predictedWait; // restaurant 참조
 
     @Column(name = "joined_at")
     private LocalDateTime joinedAt;
@@ -63,7 +63,7 @@ public class Reservation extends BaseEntity {
 
     public enum Status {
         REQUESTED("요청됨"),
-        APPROVED("승인됨"),
+        JOINED("입장됨"),
         CANCELLED("취소됨");
 
         private final String description;

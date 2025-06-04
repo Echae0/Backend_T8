@@ -57,11 +57,31 @@ public class Restaurant extends BaseEntity {
     private List<Menu> menus = new ArrayList<>();
 
 
-    // 연관 관계 편의 메서드
+//    // 연관 관계 편의 메서드
+//    public void addReservation(Reservation reservation) {
+//        reservations.add(reservation);
+//        reservation.setRestaurant(this);
+//    }
+
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);
         reservation.setRestaurant(this);
+
+        // 예약이 추가될 때마다 사용 가능 팀 수 감소
+        if (availableTeams != null && availableTeams > 0) {
+            availableTeams--;
+        }
     }
+
+    public void removeReservation(Reservation reservation) {
+        if (reservations.remove(reservation)) {
+            reservation.setRestaurant(null);
+            if (availableTeams != null) {
+                availableTeams++;
+            }
+        }
+    }
+
 
     public void addReview(Review review) {
         reviews.add(review);
