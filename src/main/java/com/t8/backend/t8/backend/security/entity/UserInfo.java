@@ -3,6 +3,8 @@ package com.t8.backend.t8.backend.security.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +22,12 @@ public class UserInfo {
 
     @Column(nullable = false)
     private String password;
+
+//    private String phoneNumber;
+//
+//    private String address;
+//
+//    private LocalDate birthDate;
 
     private String roles;
 }

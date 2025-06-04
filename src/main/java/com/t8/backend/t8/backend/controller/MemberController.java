@@ -1,6 +1,7 @@
 package com.t8.backend.t8.backend.controller;
 
 import com.t8.backend.t8.backend.dto.MemberDto; // 기존 MemberDto 사용
+import com.t8.backend.t8.backend.security.controller.dto.SignUpRequestDto;
 import com.t8.backend.t8.backend.security.core.annotaion.CurrentUser;
 import com.t8.backend.t8.backend.security.entity.UserInfo;
 import com.t8.backend.t8.backend.service.MemberService; // MemberService 클래스를 임포트
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 
 import jakarta.validation.Valid; // 유효성 검증을 위해 추가
 import java.util.List;
@@ -21,13 +23,27 @@ public class MemberController {
     private final MemberService memberService; // 필드 이름을 memberService로 변경 (가독성)
 
 
-    @PostMapping
+//    @PostMapping
+//    public ResponseEntity<MemberDto> create(@Valid @RequestBody MemberDto dto,
+//                                            //@AuthenticationPrincipal(expression = "userInfo") UserInfo currentUser,
+//                                            @CurrentUser UserInfo currentUser) {
+////        memberService.create(Mdto, currentUser);
+//        return ResponseEntity.ok(memberService.create(dto, currentUser));
+//    }
 
-    public ResponseEntity<MemberDto> create(@Valid @RequestBody MemberDto dto,
-                                            //@AuthenticationPrincipal(expression = "userInfo") UserInfo currentUser,
+    @PostMapping
+    public ResponseEntity<MemberDto> create(@Valid @RequestBody SignUpRequestDto dto,
                                             @CurrentUser UserInfo currentUser) {
-//        MemberDto createdMember = memberService.create(dto, currentUser);
-        return ResponseEntity.ok(memberService.create(dto, currentUser));
+        // SignUpRequestDto → MemberDto 수동 변환
+        MemberDto Mdto = MemberDto.builder()
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .phoneNumber(dto.getPhoneNumber())
+                .address(dto.getAddress())
+                .birthDate(dto.getBirthDate())
+                .build();
+
+        return ResponseEntity.ok(memberService.create(Mdto, currentUser));
     }
 
 
