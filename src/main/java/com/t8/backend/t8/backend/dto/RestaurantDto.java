@@ -23,7 +23,7 @@ public class RestaurantDto {
     private Double averageRating;
     private Integer dailyLimitedTeams;
     private Integer availableTeams;
-    private Integer CurrentWaitingTeams;
+    private Integer currentWaitingTeams;
     private Integer PredictedWaitingTime;
 
 }

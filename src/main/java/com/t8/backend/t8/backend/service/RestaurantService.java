@@ -51,7 +51,7 @@ public class RestaurantService {
                 .averageRating(dto.getAverageRating() != null ? dto.getAverageRating() : 0.0)
                 .dailyLimitedTeams(dto.getDailyLimitedTeams())
                 .availableTeams(dto.getAvailableTeams())
-                .CurrentWaitingTeams(dto.getCurrentWaitingTeams() != null ? dto.getCurrentWaitingTeams() : 0)
+                .currentWaitingTeams(dto.getCurrentWaitingTeams() != null ? dto.getCurrentWaitingTeams() : 0)
                 .PredictedWaitingTime(dto.getPredictedWaitingTime() != null ? dto.getPredictedWaitingTime() : 0)
                 .build();    }
 
@@ -80,9 +80,7 @@ public class RestaurantService {
                 .averageRating(entity.getAverageRating())
                 .dailyLimitedTeams(entity.getDailyLimitedTeams())
                 .availableTeams(entity.getAvailableTeams())
-                .CurrentWaitingTeams(entity.getCurrentWaitingTeams())
-                .PredictedWaitingTime(entity.getPredictedWaitingTime())
-                .CurrentWaitingTeams(reservationCount)
+                .currentWaitingTeams(reservationCount)
                 .PredictedWaitingTime(predicted)
                 .build();
     }

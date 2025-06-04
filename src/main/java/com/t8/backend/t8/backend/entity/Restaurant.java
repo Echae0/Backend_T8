@@ -44,7 +44,7 @@ public class Restaurant extends BaseEntity {
     private Integer availableTeams;
 
     @Builder.Default
-    private Integer CurrentWaitingTeams = 0;
+    private Integer currentWaitingTeams = 0;
 
     @Builder.Default
     private Integer PredictedWaitingTime = 0;
