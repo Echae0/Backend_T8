@@ -149,7 +149,7 @@ public class RestaurantService {
     }
 
     private int getRandomMultiplier() {
-        int[] multipliers = {3, 4, 5};
+        int[] multipliers = {4};
         return multipliers[(int) (Math.random() * multipliers.length)];
     }
 
