@@ -16,17 +16,24 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     // ✅ 특정 식당에 리뷰 등록
-    @PostMapping("/api/restaurants/{restaurantId}/reviews")
-//    public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewDto dto) {
+//    @PostMapping("/api/restaurants/{restaurantId}/reviews")
+//    public ResponseEntity<ReviewDto> createReview(
+//            @PathVariable Long restaurantId,
+//            @RequestBody ReviewDto dto
+//    ) {
+//        dto.setRestaurantId(restaurantId);
 //        ReviewDto created = reviewService.create(dto);
 //        return ResponseEntity.ok(created);
 //    }
-    public ResponseEntity<ReviewDto> createReview(
-            @PathVariable Long restaurantId,
+
+    // ✅ 예약 기준 리뷰 등록
+    @PostMapping("/api/reservations/{reservationId}/reviews")
+    public ResponseEntity<ReviewDto> createReviewFromReservation(
+            @PathVariable Long reservationId,
             @RequestBody ReviewDto dto
     ) {
-        dto.setRestaurantId(restaurantId);
-        ReviewDto created = reviewService.create(restaurantId, dto);
+        dto.setReservationId(reservationId); // reservationId만 입력받음
+        ReviewDto created = reviewService.create(dto);
         return ResponseEntity.ok(created);
     }
 

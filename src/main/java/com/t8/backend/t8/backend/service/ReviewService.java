@@ -29,15 +29,12 @@ public class ReviewService {
 
 
     // 등록
-    public ReviewDto create(Long restaurantId, ReviewDto dto) {
-        Member member = memberRepository.findById(dto.getMemberId())
-                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
-
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException("식당을 찾을 수 없습니다."));
-
+    public ReviewDto create(ReviewDto dto) {
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
                 .orElseThrow(() -> new EntityNotFoundException("예약을 찾을 수 없습니다."));
+
+        Member member = reservation.getMember();
+        Restaurant restaurant = reservation.getRestaurant();
 
         Review review = Review.builder()
                 .imageUrl(dto.getImageUrl())

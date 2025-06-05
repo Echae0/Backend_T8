@@ -51,7 +51,7 @@ public class ReviewEntityTest {
                 .restaurantId(restaurant.getId())
                 .build();
 
-        ReviewDto saved = reviewService.create(restaurant.getId(), reviewDto);
+        ReviewDto saved = reviewService.create(reviewDto);
         assertNotNull(saved.getId());
         System.out.println("✅ 저장된 리뷰 ID: " + saved.getId());
 
