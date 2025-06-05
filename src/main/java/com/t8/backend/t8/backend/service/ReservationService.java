@@ -248,8 +248,8 @@ public class ReservationService {
 
                 // 🔴 예상 대기 시간 산정 로직 일관성 확인 (create, getByRestaurantId와 비교)
                 //    Math.random() 사용은 테스트 용이성을 떨어뜨릴 수 있음.
-                int randomMultiplier = 3 + (int)(Math.random() * 3); // 3, 4, 5
-                r.setPredictedWait(turnTime * randomMultiplier);
+//                int randomMultiplier = 3 + (int)(Math.random() * 3); // 3, 4, 5
+                r.setPredictedWait(turnTime * 4);
             }
             // 🔴 조회 메소드 내 반복적인 saveAll 호출은 성능에 큰 영향.
             //    이 로직의 필요성 및 위치 재검토 필요. (예: 특정 이벤트 발생 시에만 업데이트)
