@@ -7,11 +7,13 @@ import com.t8.backend.t8.backend.entity.Restaurant;
 import com.t8.backend.t8.backend.repository.MemberRepository;
 import com.t8.backend.t8.backend.repository.ReservationRepository;
 import com.t8.backend.t8.backend.repository.RestaurantRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 // 🔴 사용하지 않는 import 제거 (선택 사항이지만 코드 정리 차원)
 // import java.util.Map;
 // import java.util.stream.Collectors; // Collectors는 사용 중이므로 유지
+import java.time.LocalDate;
 import java.util.concurrent.atomic.AtomicInteger; // getByRestaurantId (DB 미업데이트 시) 제안에 사용
 
 import java.time.Duration;
@@ -94,19 +96,37 @@ public class ReservationService {
 
     @Transactional
     public ReservationDto create(ReservationDto dto) {
+
+
         Reservation reservation = toEntity(dto); // 🔴 toEntity에서 restaurant가 null이면 아래 로직에서 NPE 발생
+        Member member = reservation.getMember();
+
+        // 1. 사용자가 이미 REQUEST 상태의 예약이 있는지 확인
+        if (member.hasRequestStatusReservation()) {
+            throw new IllegalStateException("이미 요청 상태의 예약이 존재합니다. 한 번에 하나의 예약만 요청할 수 있습니다.");
+        }
 
         // 🔴 reservation.getRestaurant()가 null이 아님을 보장하거나, null 체크 후 로직 진행
         if (reservation.getRestaurant() != null) {
             Restaurant restaurant = reservation.getRestaurant();
+            LocalDate today = LocalDate.now(); // 현재 날짜 가져오기
 
-            // 🔴 restaurant.getDailyLimitedTeams()가 null일 경우 NPE 발생 가능성 (Integer 타입이라면)
-            //    Restaurant 엔티티에서 이 필드가 primitive type(int)이고 기본값을 갖도록 하는 것이 안전.
-            int dailyLimitedTeams = restaurant.getDailyLimitedTeams() != null ? restaurant.getDailyLimitedTeams() : 0; // 예시: null일 경우 0으로 처리
-            if (dailyLimitedTeams <= 0) { // 🔴 또는 식당 설정 오류로 간주하고 예외 처리
-                // throw new IllegalStateException("Restaurant daily limit not configured properly.");
+            // 레스토랑 일일 제한 팀 수 확인
+            int dailyLimitedTeams = restaurant.getDailyLimitedTeams() != null ? restaurant.getDailyLimitedTeams() : 0;
+            if (dailyLimitedTeams <= 0) {
+                throw new IllegalStateException("레스토랑의 일일 예약 제한이 설정되지 않았습니다.");
             }
 
+            int activeReservationsToday = reservationRepository
+                    .countByRestaurantAndReservedAtDateAndStatusIn(
+                            restaurant,
+                            LocalDateTime.now(), // 현재 날짜+시간 전달
+                            List.of(Reservation.Status.REQUESTED, Reservation.Status.JOINED)
+                    );
+
+            if (activeReservationsToday >= dailyLimitedTeams) {
+                throw new IllegalStateException("오늘의 예약 제한 인원을 초과하여 예약할 수 없습니다.");
+            }
 
             int activeReservations = reservationRepository
                     .countByRestaurantAndStatusIn(restaurant, List.of(Reservation.Status.REQUESTED, Reservation.Status.JOINED));

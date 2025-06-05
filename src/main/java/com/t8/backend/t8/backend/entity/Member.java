@@ -46,16 +46,16 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<Reservation> reservations = new ArrayList<>();
 
-    // 연관 관계 편의 메서드
-    public void addReservation(Reservation reservation) {
-        reservations.add(reservation);
-        reservation.setMember(this);
-    }
-
-    public void removeReservation(Reservation reservation) {
-        reservations.remove(reservation);
-        reservation.setMember(null);
-    }
+//    // 연관 관계 편의 메서드
+//    public void addReservation(Reservation reservation) {
+//        reservations.add(reservation);
+//        reservation.setMember(this);
+//    }
+//
+//    public void removeReservation(Reservation reservation) {
+//        reservations.remove(reservation);
+//        reservation.setMember(null);
+//    }
 
     public enum Status {
         ACTIVE("활성"),
@@ -76,5 +76,10 @@ public class Member extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_info_id")
     private UserInfo userInfo;
+
+    public boolean hasRequestStatusReservation() {
+        return this.reservations.stream()
+                .anyMatch(reservation -> reservation.getStatus() == Reservation.Status.REQUESTED);
+    }
 
 }
