@@ -76,15 +76,36 @@ public class ReservationService {
     public ReservationDto create(ReservationDto dto) {
         Reservation reservation = toEntity(dto);
 
+        // turnTime, predictedWait 직접 계산
+//        if (reservation.getRestaurant() != null) {
+//            int count = reservationRepository.countByRestaurantAndStatus(
+//                    reservation.getRestaurant(), Reservation.Status.REQUESTED);
+//            int turnTime = count + 1;
+//            reservation.setTurnTime(turnTime);
+//
+//            // ✅ predictedWait = turnTime × (3~5 중 랜덤값)
+//            int randomMultiplier = 3 + (int)(Math.random() * 3); // 3, 4, 5
+//            reservation.setPredictedWait(turnTime * randomMultiplier);
+//        }
+
         if (reservation.getRestaurant() != null) {
-            int count = reservationRepository.countByRestaurantAndStatus(
-                    reservation.getRestaurant(), Reservation.Status.REQUESTED);
-            int turnTime = count + 1;
+            Restaurant restaurant = reservation.getRestaurant();
+
+            // ✅ 1. 현재 유효 예약 건 수 확인
+            int activeReservations = reservationRepository
+                    .countByRestaurantAndStatusIn(restaurant, List.of(Reservation.Status.REQUESTED, Reservation.Status.JOINED));
+
+            // ✅ 2. 제한 초과 여부 확인
+            if (activeReservations >= restaurant.getDailyLimitedTeams()) {
+                throw new IllegalStateException("예약 제한 인원 초과로 예약할 수 없습니다.");
+            }
+
+            // ✅ 레스토랑의 currentWaitingTeams + 1 을 turnTime으로 사용
+            int turnTime = restaurant.getCurrentWaitingTeams() + 1;
             reservation.setTurnTime(turnTime);
 
-            // ✅ predictedWait = turnTime × (3~5 중 랜덤값)
-            int randomMultiplier = 3 + (int)(Math.random() * 3); // 3, 4, 5
-            reservation.setPredictedWait(turnTime * randomMultiplier);
+            // ✅ predictedWait는 레스토랑의 predictedWaitingTime 그대로 사용
+            reservation.setPredictedWait(restaurant.getPredictedWaitingTime());
         }
 
         reservation = reservationRepository.save(reservation);
