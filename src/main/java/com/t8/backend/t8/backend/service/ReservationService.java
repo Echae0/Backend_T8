@@ -104,8 +104,8 @@ public class ReservationService {
             int turnTime = restaurant.getCurrentWaitingTeams() + 1;
             reservation.setTurnTime(turnTime);
 
-            // ✅ predictedWait는 레스토랑의 predictedWaitingTime 그대로 사용
-            reservation.setPredictedWait(restaurant.getPredictedWaitingTime());
+            int randomMultiplier = 3 + (int)(Math.random() * 3); // 3, 4, 5
+            reservation.setPredictedWait(turnTime * randomMultiplier);
         }
 
         reservation = reservationRepository.save(reservation);

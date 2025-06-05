@@ -58,7 +58,7 @@ public class RestaurantService {
     private RestaurantDto toDto(Restaurant entity) {
 
         int reservationCount = reservationRepository.findActiveByRestaurantId(entity.getId()).size();
-        int predicted = (reservationCount + 1) * getRandomMultiplier();
+        int predicted = reservationCount == 0 ? 0 : (reservationCount + 1) * getRandomMultiplier();
 
         return RestaurantDto.builder()
                 .id(entity.getId())
@@ -92,7 +92,7 @@ public class RestaurantService {
         Restaurant saved = restaurantRepository.save(restaurant);
 
         int reservationCount = reservationRepository.findActiveByRestaurantId(saved.getId()).size();
-        int predicted = (reservationCount + 1) * getRandomMultiplier();
+        int predicted = reservationCount == 0 ? 0 : (reservationCount + 1) * getRandomMultiplier();
 
         saved.setCurrentWaitingTeams(reservationCount);
         saved.setPredictedWaitingTime(predicted);
@@ -143,7 +143,7 @@ public class RestaurantService {
 
         int reservationCount = reservationRepository.findActiveByRestaurantId(id).size();
         restaurant.setCurrentWaitingTeams(reservationCount);
-        restaurant.setPredictedWaitingTime((reservationCount + 1) * getRandomMultiplier());
+        restaurant.setPredictedWaitingTime(reservationCount == 0 ? 0 : (reservationCount + 1) * getRandomMultiplier());
 
         return toDto(restaurantRepository.save(restaurant));
     }
