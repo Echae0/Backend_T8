@@ -9,13 +9,19 @@ import com.t8.backend.t8.backend.service.MemberService;
 import com.t8.backend.t8.backend.security.repository.UserInfoRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/userinfos")
@@ -84,5 +90,22 @@ public class UserInfoController {
             throw new UsernameNotFoundException("invalid user request !");
         }
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getCurrentUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UserInfo user = repository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // 🔴 DTO 없이 ID만 보내기
+        Map<String, Object> result = new HashMap<>();
+        result.put("id", user.getId());
+
+        return ResponseEntity.ok(result);
+    }
+
 
 }
