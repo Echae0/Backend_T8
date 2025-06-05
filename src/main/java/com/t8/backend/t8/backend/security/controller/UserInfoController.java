@@ -7,6 +7,7 @@ import com.t8.backend.t8.backend.security.entity.UserInfo;
 import com.t8.backend.t8.backend.security.jwt.JwtService;
 import com.t8.backend.t8.backend.service.MemberService;
 import com.t8.backend.t8.backend.security.repository.UserInfoRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -85,4 +86,18 @@ public class UserInfoController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        try {
+            String token = jwtService.extractToken(request);
+            String email = jwtService.extractUsername(token); // subject에 email 저장되어 있음
+
+            // (선택) RefreshToken 삭제 로직이 있다면 여기에 추가
+            // refreshTokenRepository.deleteByEmail(email);
+
+            return ResponseEntity.ok("로그아웃 완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("유효하지 않은 토큰입니다.");
+        }
+    }
 }
