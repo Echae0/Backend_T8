@@ -2,10 +2,7 @@ package com.t8.backend.t8.backend.service;
 
 import com.t8.backend.t8.backend.dto.CategoryDto;
 import com.t8.backend.t8.backend.dto.RestaurantDto;
-import com.t8.backend.t8.backend.entity.Category;
-import com.t8.backend.t8.backend.entity.Member;
-import com.t8.backend.t8.backend.entity.Restaurant;
-import com.t8.backend.t8.backend.entity.Review;
+import com.t8.backend.t8.backend.entity.*;
 import com.t8.backend.t8.backend.repository.CategoryRepository;
 import com.t8.backend.t8.backend.repository.ReservationRepository;
 import com.t8.backend.t8.backend.repository.RestaurantRepository;
@@ -57,7 +54,11 @@ public class RestaurantService {
 
     private RestaurantDto toDto(Restaurant entity) {
 
-        int reservationCount = reservationRepository.findActiveByRestaurantId(entity.getId()).size();
+//        int reservationCount = reservationRepository.findActiveByRestaurantId(entity.getId()).size();
+        int reservationCount = reservationRepository.countByRestaurantAndStatusIn(
+                entity,
+                List.of(Reservation.Status.REQUESTED)
+        );
         int predicted = reservationCount == 0 ? 0 : (reservationCount + 1) * getRandomMultiplier();
 
         return RestaurantDto.builder()
@@ -101,14 +102,42 @@ public class RestaurantService {
         return toDto(saved);
     }
 
+//    public RestaurantDto getById(Long id) {
+//        return restaurantRepository.findById(id)
+//                .map(this::toDto)
+//                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + id));
+//    }
     public RestaurantDto getById(Long id) {
-        return restaurantRepository.findById(id)
-                .map(this::toDto)
+        Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + id));
+
+        // 최신 예약 수 계산 및 저장
+        int reservationCount = reservationRepository.countByRestaurantAndStatusIn(restaurant, List.of(Reservation.Status.REQUESTED));
+        restaurant.setCurrentWaitingTeams(reservationCount);
+        restaurant.setPredictedWaitingTime(reservationCount == 0 ? 0 : (reservationCount + 1) * getRandomMultiplier());
+        restaurantRepository.save(restaurant); // 변경 사항 저장
+
+        return toDto(restaurant);
     }
 
+//    public List<RestaurantDto> getAll() {
+//        return restaurantRepository.findAll().stream()
+//                .map(this::toDto)
+//                .collect(Collectors.toList());
+//    }
+
     public List<RestaurantDto> getAll() {
-        return restaurantRepository.findAll().stream()
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+
+        for (Restaurant restaurant : restaurants) {
+            int reservationCount = reservationRepository.countByRestaurantAndStatusIn(restaurant, List.of(Reservation.Status.REQUESTED));
+            restaurant.setCurrentWaitingTeams(reservationCount);
+            restaurant.setPredictedWaitingTime(reservationCount == 0 ? 0 : (reservationCount + 1) * getRandomMultiplier());
+        }
+
+        restaurantRepository.saveAll(restaurants); // 모든 레스토랑 한 번에 저장
+
+        return restaurants.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
@@ -141,7 +170,7 @@ public class RestaurantService {
         restaurant.setDailyLimitedTeams(dto.getDailyLimitedTeams());
         restaurant.setAvailableTeams(dto.getAvailableTeams());
 
-        int reservationCount = reservationRepository.findActiveByRestaurantId(id).size();
+        int reservationCount = reservationRepository.countByRestaurantAndStatusIn(restaurant, List.of(Reservation.Status.REQUESTED));
         restaurant.setCurrentWaitingTeams(reservationCount);
         restaurant.setPredictedWaitingTime(reservationCount == 0 ? 0 : (reservationCount + 1) * getRandomMultiplier());
 
