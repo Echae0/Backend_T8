@@ -272,15 +272,39 @@ public class ReservationService {
     }
 
 
+    @Transactional
     public ReservationDto getById(Long id) {
-        // 🔴 ID가 null인 경우에 대한 처리 추가 가능
         if (id == null) {
             throw new IllegalArgumentException("🔴 Reservation ID cannot be null.");
         }
-        return reservationRepository.findById(id)
-                .map(this::toDto)
+
+        Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found with id: " + id));
+
+        // 🔴 해당 예약이 REQUESTED 상태일 경우에만 순서 계산
+        if (reservation.getStatus() == Reservation.Status.REQUESTED) {
+            Restaurant restaurant = reservation.getRestaurant();
+            if (restaurant == null || restaurant.getId() == null) {
+                throw new IllegalStateException("Reservation is not associated with a valid restaurant.");
+            }
+
+            List<Reservation> activeReservations = reservationRepository.findByRestaurantAndStatusIn(
+                    restaurant, List.of(Reservation.Status.REQUESTED));
+
+            // turnTime 및 predictedWait 재계산
+            for (int i = 0; i < activeReservations.size(); i++) {
+                Reservation r = activeReservations.get(i);
+                int turnTime = i + 1;
+                r.setTurnTime(turnTime);
+                r.setPredictedWait(turnTime * 4); // 예: 4분 단위
+            }
+
+            reservationRepository.saveAll(activeReservations);
+        }
+
+        return toDto(reservation);
     }
+
 
     public List<ReservationDto> getAll() {
         return reservationRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
