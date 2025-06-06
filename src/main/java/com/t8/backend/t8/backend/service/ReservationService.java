@@ -196,39 +196,37 @@ public class ReservationService {
     }
 
 
-    @Transactional // 🔴 getBy... 메소드에서 DB를 수정한다면 readOnly=false여야 함 (현재 클래스 레벨에 readOnly=true, 메소드에 @Transactional은 기본 readOnly=false)
+    @Transactional
     public List<ReservationDto> getByRestaurantId(Long restaurantId) {
-        // 🔴 식당 ID가 null이거나 유효하지 않은 경우에 대한 처리 추가 가능
         if (restaurantId == null) {
             throw new IllegalArgumentException("🔴 Restaurant ID cannot be null.");
         }
-        List<Reservation> reservations = reservationRepository.findActiveByRestaurantId(restaurantId);
 
-        reservations.sort((r1, r2) -> {
-            // 🔴 r1 또는 r2의 createdAt이 null일 경우 NPE 발생 가능성
-            if (r1.getCreatedAt() == null && r2.getCreatedAt() == null) return 0;
-            if (r1.getCreatedAt() == null) return 1; // null을 뒤로 보내는 정렬 (예시)
-            if (r2.getCreatedAt() == null) return -1; // null을 뒤로 보내는 정렬 (예시)
-            return r1.getCreatedAt().compareTo(r2.getCreatedAt());
-        });
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException("🔴 Restaurant not found with id: " + restaurantId));
 
-        for (int i = 0; i < reservations.size(); i++) {
-            Reservation reservation = reservations.get(i);
-            int turnTime = i + 1;
+        // 상태가 REQUESTED인 예약들 조회
+        List<Reservation> reservations = reservationRepository.findByRestaurantAndStatusIn(
+                restaurant, List.of(Reservation.Status.REQUESTED));
+
+        int currentWT = reservations.size(); // 현재 대기 팀 수
+
+        // 각 예약에 대해 turnTime 및 predictedWait 설정
+        int turnTime = 1;
+        for (Reservation reservation : reservations) {
             reservation.setTurnTime(turnTime);
-            // 🔴 예상 대기 시간 산정 로직 일관성 확인
-            reservation.setPredictedWait(turnTime * 4);
+            reservation.setPredictedWait(turnTime * 4); // 🔴 일관성 확인 필요
+            turnTime++;
         }
 
-        // 🔴 조회 메소드에서 대량의 saveAll 호출은 성능에 영향 줄 수 있음.
-        //    이 로직이 반드시 필요한지, 아니면 DTO 변환 시에만 순번을 계산해 보여줄지 검토.
-        //    만약 DB 업데이트가 필요하다면 메소드명을 updateTurnTimesForRestaurantReservations 등으로 변경하는 것이 명확.
         reservationRepository.saveAll(reservations);
 
         return reservations.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+
 
 
     @Transactional // 🔴 getBy... 메소드에서 DB를 수정한다면 readOnly=false여야 함
@@ -251,15 +249,9 @@ public class ReservationService {
                 System.err.println("🔴 Warning: Restaurant in group has null ID.");
                 continue; // 또는 예외 처리
             }
-            List<Reservation> activeReservations = reservationRepository.findActiveByRestaurantId(restaurant.getId());
+            List<Reservation> activeReservations = reservationRepository.findByRestaurantAndStatusIn(restaurant, List.of(Reservation.Status.REQUESTED));
 
-            activeReservations.sort((a, b) -> {
-                // 🔴 a 또는 b의 createdAt이 null일 경우 NPE 발생 가능성
-                if (a.getCreatedAt() == null && b.getCreatedAt() == null) return 0;
-                if (a.getCreatedAt() == null) return 1;
-                if (b.getCreatedAt() == null) return -1;
-                return a.getCreatedAt().compareTo(b.getCreatedAt());
-            });
+//
 
             for (int i = 0; i < activeReservations.size(); i++) {
                 Reservation r = activeReservations.get(i);

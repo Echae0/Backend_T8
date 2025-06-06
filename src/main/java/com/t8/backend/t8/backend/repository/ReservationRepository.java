@@ -19,6 +19,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 //    List<Reservation> findByRestaurantId(Long restaurantId);
     List<Reservation> findByMemberId(Long memberId);
+    List<Reservation> findByRestaurantAndStatusIn(Restaurant restaurant, List<Reservation.Status> statuses);
     int countByRestaurantAndStatusIn(Restaurant restaurant, List<Reservation.Status> statuses);
 //    int countByRestaurantAndDateAndStatusIn(Restaurant restaurant, LocalDateTime reservedAt, List<Reservation.Status> statuses);
     @Query("SELECT COUNT(r) FROM Reservation r " +
