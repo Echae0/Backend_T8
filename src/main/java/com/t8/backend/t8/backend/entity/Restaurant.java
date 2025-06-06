@@ -22,10 +22,16 @@ public class Restaurant extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @Size(max = 50)
     private String restaurantName;
 
+    @Size(max = 100)
     private String location;
+
+    @Size(max = 300)
     private String description;
+
+    @Size(max = 30)
     private String parking;
 
     private String imageUrl;
@@ -34,13 +40,21 @@ public class Restaurant extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$")
     private String contactNumber;
+
+    @Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d-([01]\\d|2[0-3]):[0-5]\\d$")
     private String openingHours;
 
     @Builder.Default
     private Double averageRating = 0.0;
 
+    @Min(1)
+    @Max(100)
     private Integer dailyLimitedTeams;
+
+    @Min(1)
+    @Max(100)
     private Integer availableTeams;
 
     @Builder.Default
