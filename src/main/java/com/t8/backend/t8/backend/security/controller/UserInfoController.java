@@ -1,6 +1,8 @@
 package com.t8.backend.t8.backend.security.controller;
 
 import com.t8.backend.t8.backend.dto.MemberDto;
+import com.t8.backend.t8.backend.entity.Member;
+import com.t8.backend.t8.backend.repository.MemberRepository;
 import com.t8.backend.t8.backend.security.controller.dto.AuthRequest;
 import com.t8.backend.t8.backend.security.controller.dto.SignUpRequestDto;
 import com.t8.backend.t8.backend.security.entity.UserInfo;
@@ -37,6 +39,9 @@ public class UserInfoController {
     private JwtService jwtService;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private MemberRepository memberRepository;
+
 
     @GetMapping("/welcome")
     public String welcome() {
@@ -92,18 +97,44 @@ public class UserInfoController {
         }
     }
 
+//    @GetMapping("/me")
+//    public ResponseEntity<Map<String, Object>> getCurrentUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+//        if (userDetails == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//
+//        UserInfo user = repository.findByEmail(userDetails.getUsername())
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+//
+//        // 🔴 DTO 없이 ID만 보내기
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("id", user.getId());
+//
+//        return ResponseEntity.ok(result);
+//    }
+
+
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> getCurrentUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        UserInfo user = repository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        String email = userDetails.getUsername();
 
-        // 🔴 DTO 없이 ID만 보내기
+        // 1. UserInfo를 통해 유효한 사용자 확인 (필요하다면 생략 가능)
+        UserInfo user = repository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found in UserInfo"));
+
+        // 2. Members 테이블에서 이메일로 회원 검색
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found in Members"));
+
+        // 3. Members의 ID만 응답
+
         Map<String, Object> result = new HashMap<>();
-        result.put("id", user.getId());
+        result.put("userInfoId", user.getId());
+        result.put("memberId", member.getId());
 
         return ResponseEntity.ok(result);
     }
