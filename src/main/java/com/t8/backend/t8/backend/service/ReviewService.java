@@ -71,6 +71,16 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
+    public List<ReviewDto> getByMemberId(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("식당을 찾을 수 없습니다."));
+
+        return member.getReviews()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     // 전체 조회
     public List<ReviewDto> getAll() {
         return reviewRepository.findAll()

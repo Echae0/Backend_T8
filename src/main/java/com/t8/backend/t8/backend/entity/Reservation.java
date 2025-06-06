@@ -64,6 +64,7 @@ public class Reservation extends BaseEntity {
     public enum Status {
         REQUESTED("요청됨"),
         JOINED("입장됨"),
+        REVIEWED("리뷰작성완료"),
         CANCELLED("취소됨");
 
         private final String description;

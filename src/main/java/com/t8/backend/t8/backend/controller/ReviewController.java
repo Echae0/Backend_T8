@@ -43,9 +43,15 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getByRestaurantId(restaurantId));
     }
 
+    // 특정 회원의 모든 리뷰 조회
+    @GetMapping("/api/members/{memberId}/reviews")
+    public ResponseEntity<List<ReviewDto>> getAllReviewsByRestaurant(@PathVariable Long memberId) {
+        return ResponseEntity.ok(reviewService.getByMemberId(memberId));
+    }
+
     // 모든 리뷰 조회
     @GetMapping("/api/reviews")
-    public ResponseEntity<List<ReviewDto>> getAllReviews() {
+    public ResponseEntity<List<ReviewDto>> getAllReviewsByMember() {
         return ResponseEntity.ok(reviewService.getAll());
     }
 

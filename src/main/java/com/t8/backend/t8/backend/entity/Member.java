@@ -46,6 +46,10 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<Reservation> reservations = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Review> reviews = new ArrayList<>();
+
 //    // 연관 관계 편의 메서드
 //    public void addReservation(Reservation reservation) {
 //        reservations.add(reservation);

@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email); // 이메일 중복 확인을 위해 추가
+    Optional<Member> findById(Long id);
 }
