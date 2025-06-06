@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/userinfos/**", "/api/restaurants/**", "/images/**").permitAll()
+                    auth.requestMatchers("/api/userinfos/**", "/api/restaurants/**", "/images/**", "/api/reservations/**", ).permitAll()
                             .requestMatchers("/api/**").authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
