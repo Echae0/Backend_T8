@@ -4,6 +4,7 @@ import com.t8.backend.t8.backend.dto.ReviewDto;
 import com.t8.backend.t8.backend.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +33,11 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getByRestaurantId(restaurantId));
     }
 
-    // 특정 회원의 모든 리뷰 조회
-    @GetMapping("/api/members/{memberId}/reviews")
-    public ResponseEntity<List<ReviewDto>> getAllReviewsByRestaurant(@PathVariable Long memberId) {
-        return ResponseEntity.ok(reviewService.getByMemberId(memberId));
+    @GetMapping("api/members/{memberId}/reviews")
+    public Page<ReviewDto> getMyReviews(@PathVariable Long memberId,
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "6") int size) {
+        return reviewService.getReviewsByMemberWithPaging(memberId, page, size);
     }
 
     // 모든 리뷰 조회

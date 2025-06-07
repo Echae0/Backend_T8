@@ -12,6 +12,9 @@ import com.t8.backend.t8.backend.repository.ReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -178,6 +181,13 @@ public class ReviewService {
         file.transferTo(path.toFile());
 
         return savedFileName;
+    }
+
+    public Page<ReviewDto> getReviewsByMemberWithPaging(Long memberId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Review> reviewPage = reviewRepository.findByMemberId(memberId, pageable);
+
+        return reviewPage.map(this::toDto); // toDto는 Review → ReviewDto 변환 메서드
     }
 
 }

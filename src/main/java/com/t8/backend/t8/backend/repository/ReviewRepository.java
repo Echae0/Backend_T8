@@ -1,6 +1,8 @@
 package com.t8.backend.t8.backend.repository;
 
 import com.t8.backend.t8.backend.entity.Review;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +16,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // (선택) 회원별 리뷰 조회
     List<Review> findByMemberId(Long memberId);
+
+    Page<Review> findByMemberId(Long memberId, Pageable pageable);
+
 }
