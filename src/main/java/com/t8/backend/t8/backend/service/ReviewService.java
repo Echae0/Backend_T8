@@ -45,10 +45,12 @@ public class ReviewService {
         Member member = reservation.getMember();
         Restaurant restaurant = reservation.getRestaurant();
 
-//        Review reviewEntity = toEntity(dto); // dto → 엔티티 변환
-//        String savedImageFileName = reviewEntity.saveImage(uploadDir); // 이미지 저장 및 경로 저장
+        String savedImageFileName = null;
 
-        String savedImageFileName = saveImageFile(dto.getImageFile(), uploadDir);
+        if (dto.getImageFile() != null && !dto.getImageFile().isEmpty()) {
+            savedImageFileName = saveImageFile(dto.getImageFile(), uploadDir);
+        }
+//        String savedImageFileName = saveImageFile(dto.getImageFile(), uploadDir);
 
 
 
@@ -155,6 +157,10 @@ public class ReviewService {
 
     // 파일 저장 유틸리티 메서드 (서비스 내부에 두는게 일반적)
     private String saveImageFile(MultipartFile file, String uploadDir) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
         String originalFilename = file.getOriginalFilename();
         String ext = "";
 
