@@ -26,7 +26,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"restaurant"})
     List<Reservation> findByMemberId(Long memberId);
 
-
 //    List<Reservation> findByRestaurantAndStatusIn(Restaurant restaurant, List<Reservation.Status> statuses);
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"member"})
     List<Reservation> findByRestaurantAndStatusIn(Restaurant restaurant, List<Reservation.Status> statuses);
