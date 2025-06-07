@@ -3,9 +3,16 @@ package com.t8.backend.t8.backend.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "reviews")
@@ -18,7 +25,7 @@ public class Review extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String imageUrl;
+    private String imagePath;
 
     private String comment;
 
@@ -68,4 +75,5 @@ public class Review extends BaseEntity {
             this.waitingTime = duration.isNegative() ? Duration.ZERO : duration;
         }
     }
+
 }
