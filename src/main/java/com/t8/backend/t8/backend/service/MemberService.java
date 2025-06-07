@@ -4,6 +4,7 @@ import com.t8.backend.t8.backend.dto.MemberDto;
 import com.t8.backend.t8.backend.entity.Member;
 import com.t8.backend.t8.backend.repository.MemberRepository;
 import com.t8.backend.t8.backend.security.entity.UserInfo;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,7 +88,7 @@ public class MemberService {
 
 
     @Transactional
-    public MemberDto create(MemberDto dto, UserInfo currentUser) {
+    public MemberDto create(@Valid MemberDto dto, UserInfo currentUser) {
         Member member = toEntity(dto, currentUser);
         return toDto(memberRepository.save(member));
     }
