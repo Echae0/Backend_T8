@@ -24,7 +24,7 @@ import java.util.stream.Collectors; // stream().map(this::toDto).collect(Collect
 
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
